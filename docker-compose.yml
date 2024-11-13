@@ -1,10 +1,11 @@
 version: '3.8'
 
 services:
+  # Backend service (Spring Boot app)
   app:
-    image: 'spring-app' # previously pushed docker image of this app from docker repo
     build:
-      context: .
+      context: ./server
+      dockerfile: Dockerfile # This is the Dockerfile for your backend in the server directory
     container_name: app
     depends_on:
       - db
@@ -15,10 +16,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
     ports:
       - "8080:8080"
 
+  # Database service
   db:
     image: postgres
     container_name: db
@@ -28,3 +29,25 @@ services:
       - POSTGRES_DB=demodb
     ports:
       - "5432:5432"
+
+  # Frontend service (Vite React app)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client/src:/app/src # Sync the src directory for file changes
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Enable polling for Vite file-watching
+
+  # Dozzle service
+  dozzle:
+    image: amir20/dozzle
+    container_name: dozzle
+    ports:
+      - "9999:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Allows Dozzle to read container logs
