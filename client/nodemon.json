@@ -4,4 +4,4 @@
     "exec": "npm run dev -- --host",
     "legacyWatch": true
   }
-  
+
