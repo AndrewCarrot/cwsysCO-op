@@ -11,11 +11,13 @@ public class ClimberDTOMapper implements Function<Climber, ClimberDTO> {
     public ClimberDTO apply(Climber climber) {
         return new ClimberDTO(
                 climber.getId(),
-                climber.getCardNumber(),
                 climber.getFirstName(),
                 climber.getLastName(),
-                climber.getNote(),
+                climber.getEmail(),
                 climber.getPhoneNumber(),
+                climber.getDateOfBirth(),
+                climber.getNote(),
+                climber.getCardNumber(),
                 climber.isMultisport(),
                 climber.getPasses(),
                 climber.getGroups());

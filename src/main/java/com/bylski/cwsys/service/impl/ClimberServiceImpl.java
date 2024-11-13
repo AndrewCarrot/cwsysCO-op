@@ -41,12 +41,14 @@ public class ClimberServiceImpl implements ClimberService {
 
     @Override
     public void addNewClimber(ClimberPayload payload) {
-        if (climberRepository.existsByCardNumber(payload.cardNumber()))
-            throw new ResourceAlreadyExistsException("Climber","card number", payload.cardNumber());
+        if (climberRepository.existsByEmail(payload.email()))
+            throw new ResourceAlreadyExistsException("Climber","email", payload.email());
         Climber climber = new Climber(
-                payload.cardNumber(),
                 payload.firstName(),
-                payload.lastName()
+                payload.lastName(),
+                payload.email(),
+                payload.phoneNumber(),
+                payload.dateOfBirth()
         );
         climberRepository.save(climber);
     }

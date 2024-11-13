@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ClimberRepository extends JpaRepository<Climber, Long> {
     Optional<Climber> findByCardNumber(String cardNumber);
     boolean existsByCardNumber(String cardNumber);
+    boolean existsByEmail(String email);
 }

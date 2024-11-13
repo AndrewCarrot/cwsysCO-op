@@ -63,18 +63,23 @@ class ClimberServiceImplTest {
         mapper = new ClimberDTOMapper();
         climber = new Climber(
                 1L,
-                "12123123",
                 "Ryszard",
-                "Biały"
+                "Biały",
+                "email@wp.pl",
+                "692738635",
+                LocalDate.of(1997,7,1)
         );
         climber2 = new Climber(
                 2L,
-                "12121",
-                "Stachu",
-                "Jones"
+                "Stanisław",
+                "Wasilewski",
+                "email2@wp.pl",
+                "378564736",
+                LocalDate.of(1995,4,20)
         );
         climberDTO = mapper.apply(climber);
         climberDTO2 = mapper.apply(climber2);
+
 
         punchPass = new Pass(
                 PassType.PUNCH,
@@ -135,13 +140,13 @@ class ClimberServiceImplTest {
     @Test
     void addNewClimber() {
 
-        ClimberPayload payload = new ClimberPayload("12121","Janusz","Sram");
-        given(repo.existsByCardNumber(anyString())).willReturn(false);
+        ClimberPayload payload = new ClimberPayload("Janusz","Sram", "sram@wp.pl","478647532",LocalDate.of(1965,10,14));
+        given(repo.existsByEmail(anyString())).willReturn(false);
 
         service.addNewClimber(payload);
 
         verify(repo,times(1)).save(climberArgumentCaptor.capture());
-        assertThat(climberArgumentCaptor.getValue().getCardNumber()).isEqualTo(payload.cardNumber());
+        assertThat(climberArgumentCaptor.getValue().getEmail()).isEqualTo(payload.email());
 
     }
 
