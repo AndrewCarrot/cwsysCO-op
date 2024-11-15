@@ -20,7 +20,8 @@ public class ClimbingGroupDTOMapper implements Function<ClimbingGroup,ClimbingGr
                 climbingGroup.getLastModifiedDate(),
                 climbingGroup.getStartDate(),
                 climbingGroup.getEndDate(),
-                climbingGroup.getClimbers()
+                climbingGroup.getClimbers(),
+                climbingGroup.getCoachSet()
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.bylski.cwsys.model.dto;
 
 import com.bylski.cwsys.model.Climber;
+import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.enums.DayOfWeek;
 
@@ -20,5 +21,6 @@ public record ClimbingGroupDTO(
          LocalDateTime lastModifiedDate,
          LocalDate startDate,
          LocalDate endDate,
-         Set<Climber> climbers
+         Set<Climber> climbers,
+         Set<Coach> coaches
 ) {}

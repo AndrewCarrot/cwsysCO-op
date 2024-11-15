@@ -102,11 +102,11 @@ public class ClimbingGroupController {
                     })
     })
     @Parameters({
-            @Parameter(name = "groupId", description = "RequestParam"),
-            @Parameter(name = "climberId", description = "RequestParam")
+            @Parameter(name = "group-id", description = "RequestParam"),
+            @Parameter(name = "climber-id", description = "RequestParam")
     })
     @PatchMapping("/add-climber")
-    public void addClimber(@RequestParam Long groupId, @RequestParam Long climberId){
+    public void addClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "group-id") Long climberId){
         groupService.addClimber(groupId,climberId);
     }
 
@@ -115,8 +115,8 @@ public class ClimbingGroupController {
             description = "Request Example: api/group/remove-climber?groupId=1&climberId=1"
     )
     @Parameters({
-            @Parameter(name = "groupId", description = "RequestParam"),
-            @Parameter(name = "climberId", description = "RequestParam")
+            @Parameter(name = "group-id", description = "RequestParam"),
+            @Parameter(name = "climber-id", description = "RequestParam")
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -126,9 +126,28 @@ public class ClimbingGroupController {
                     })
     })
     @PatchMapping("/remove-climber")
-    public void removeClimber(@RequestParam Long groupId, @RequestParam Long climberId){
+    public void removeClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "group-id") Long climberId){
         groupService.removeClimber(groupId,climberId);
     }
 
+    @Operation(summary = "Add coach to group")
+    @Parameters({
+            @Parameter(name = "group-id", description = "RequestParam"),
+            @Parameter(name = "coach-id", description = "RequestParam")
+    })
+    @PatchMapping("/add-coach")
+    public void addCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
+        groupService.addCoach(groupId,coachId);
+    }
+
+    @Operation(summary = "remove coach from group")
+    @Parameters({
+            @Parameter(name = "group-id", description = "RequestParam"),
+            @Parameter(name = "coach-id", description = "RequestParam")
+    })
+    @PatchMapping("/remove-coach")
+    public void removeCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
+        groupService.removeCoach(groupId,coachId);
+    }
 
 }
