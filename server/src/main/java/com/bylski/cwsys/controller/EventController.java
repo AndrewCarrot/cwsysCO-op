@@ -78,21 +78,21 @@ public class EventController {
             @ApiResponse(responseCode = "409", description = "Given coach is already assigned to this event")
     })
     @Parameters({
-            @Parameter(name = "eventId", description = "RequestParam"),
-            @Parameter(name = "coachId", description = "RequestParam")
+            @Parameter(name = "event-id", description = "RequestParam"),
+            @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/add-coach")
-    public void addCoachToEvent(@RequestParam Long eventId, @RequestParam Long coachId){
+    public void addCoachToEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
         eventService.addCoach(eventId, coachId);
     }
 
     @Operation(summary = "Remove coach from event")
     @Parameters({
-            @Parameter(name = "eventId", description = "RequestParam"),
-            @Parameter(name = "coachId", description = "RequestParam")
+            @Parameter(name = "event-id", description = "RequestParam"),
+            @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/remove-coach")
-    public void removeCoachFromEvent(@RequestParam Long eventId, @RequestParam Long coachId){
+    public void removeCoachFromEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
         eventService.removeCoach(eventId, coachId);
     }
 

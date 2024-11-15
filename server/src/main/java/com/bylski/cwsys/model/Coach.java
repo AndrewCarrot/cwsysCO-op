@@ -31,12 +31,24 @@ public class Coach extends DateAudit{
                     CascadeType.MERGE
             })
     @JoinTable(
-            name = "Coach_event",
+            name = "coach_event",
             joinColumns = { @JoinColumn(name = "coach_id") },
             inverseJoinColumns = { @JoinColumn(name = "event_id") }
     )
     @JsonIgnore
-    Set<Event> eventSet = new HashSet<>();
+    private Set<Event> eventSet = new HashSet<>();
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(
+            name = "coach_climbing_group",
+            joinColumns = { @JoinColumn(name = "coach_id") },
+            inverseJoinColumns = { @JoinColumn(name = "climbing_group_id") }
+    )
+    @JsonIgnore
+    private Set<ClimbingGroup> climbingGroupSet = new HashSet<>();
 
     public Coach(String firstName, String lastName, String personalNumber){
         this.firstName = firstName;

@@ -33,6 +33,10 @@ public class ClimbingGroup extends DateAudit{
     @JsonIgnore
     private Set<Climber> climbers = new HashSet<>();
 
+    @ManyToMany(mappedBy = "climbingGroupSet")
+    @JsonIgnore
+    private Set<Coach> coachSet = new HashSet<>();
+
     public ClimbingGroup(){}
 
     public ClimbingGroup(

@@ -4,12 +4,14 @@ import com.bylski.cwsys.exception.ResourceAlreadyExistsException;
 import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.ClimbingGroup;
+import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTOMapper;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
 import com.bylski.cwsys.repository.ClimberRepository;
 import com.bylski.cwsys.repository.ClimbingGroupRepository;
+import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.ClimbingGroupService;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,13 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
 
     private final ClimbingGroupRepository climbingGroupRepository;
     private final ClimberRepository climberRepository;
+    private final CoachRepository coachRepository;
     private final ClimbingGroupDTOMapper mapper;
 
-    public ClimbingGroupServiceImpl(ClimbingGroupRepository climbingGroupRepository, ClimberRepository climberRepository, ClimbingGroupDTOMapper mapper) {
+    public ClimbingGroupServiceImpl(ClimbingGroupRepository climbingGroupRepository, ClimberRepository climberRepository, CoachRepository coachRepository, ClimbingGroupDTOMapper mapper) {
         this.climbingGroupRepository = climbingGroupRepository;
         this.climberRepository = climberRepository;
+        this.coachRepository = coachRepository;
         this.mapper = mapper;
     }
 
@@ -85,6 +89,30 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
                 .orElseThrow(()->new ResourceNotFoundException("Climber","id",climberId));
         group.getClimbers().remove(climber);
         climber.getGroups().remove(group);
+        climbingGroupRepository.save(group);
+    }
+
+    @Override
+    public void addCoach(Long groupId, Long coachId){
+        ClimbingGroup group = climbingGroupRepository.findById(groupId)
+                .orElseThrow(()->new ResourceNotFoundException("Group","id",groupId));
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
+
+        group.getCoachSet().add(coach);
+        coach.getClimbingGroupSet().add(group);
+        climbingGroupRepository.save(group);
+    }
+
+    @Override
+    public void removeCoach(Long groupId, Long coachId) {
+        ClimbingGroup group = climbingGroupRepository.findById(groupId)
+                .orElseThrow(()->new ResourceNotFoundException("Group","id",groupId));
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
+
+        group.getCoachSet().remove(coach);
+        coach.getClimbingGroupSet().remove(group);
         climbingGroupRepository.save(group);
     }
 }

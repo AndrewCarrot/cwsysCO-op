@@ -2,6 +2,7 @@ package com.bylski.cwsys.controller;
 
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
+import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.dto.CoachDTO;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.service.inf.CoachService;
@@ -107,5 +108,11 @@ public class CoachController {
         coachService.deleteCoach(coachId);
     }
 
+    @Operation(summary = "Get climbing groups for given coach")
+    @Parameter(name = "coachId", description = "PathVariable")
+    @GetMapping("/climbing-group/{coachId}")
+    public List<ClimbingGroupDTO> getClimbingGroups(@PathVariable Long coachId){
+        return coachService.getClimbingGroups(coachId);
+    }
 
 }
