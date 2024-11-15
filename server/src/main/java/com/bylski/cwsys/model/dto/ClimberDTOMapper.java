@@ -16,6 +16,8 @@ public class ClimberDTOMapper implements Function<Climber, ClimberDTO> {
                 climber.getEmail(),
                 climber.getPhoneNumber(),
                 climber.getDateOfBirth(),
+                climber.getCreatedDate(),
+                climber.getLastModifiedDate(),
                 climber.getNote(),
                 climber.getCardNumber(),
                 climber.isMultisport(),

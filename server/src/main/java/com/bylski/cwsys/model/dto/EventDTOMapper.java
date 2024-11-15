@@ -14,6 +14,8 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
                 event.getNumberOfParticipants(),
                 event.getNumberOfCoaches(),
                 event.getDurationInMinutes(),
+                event.getCreatedDate(),
+                event.getLastModifiedDate(),
                 event.getDateTime(),
                 event.getEventType(),
                 event.getName(),

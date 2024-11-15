@@ -14,7 +14,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class ClimbingGroup {
+public class ClimbingGroup extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

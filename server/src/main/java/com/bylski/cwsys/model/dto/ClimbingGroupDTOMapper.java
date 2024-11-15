@@ -16,6 +16,8 @@ public class ClimbingGroupDTOMapper implements Function<ClimbingGroup,ClimbingGr
                 climbingGroup.getDurationInMinutes(),
                 climbingGroup.getName(),
                 climbingGroup.getClimbingGroupType(),
+                climbingGroup.getCreatedDate(),
+                climbingGroup.getLastModifiedDate(),
                 climbingGroup.getStartDate(),
                 climbingGroup.getEndDate(),
                 climbingGroup.getClimbers()

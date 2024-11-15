@@ -1,9 +1,12 @@
 package com.bylski.cwsys.model.dto;
 
+import com.bylski.cwsys.model.DateAudit;
 import com.bylski.cwsys.model.ClimbingGroup;
 import com.bylski.cwsys.model.Pass;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 public record ClimberDTO(
@@ -13,6 +16,8 @@ public record ClimberDTO(
         String email,
         String phoneNumber,
         LocalDate dateOfBirth,
+        LocalDateTime createdDate,
+        LocalDateTime lastModifiedDate,
         String note,
         String cardNumber,
         boolean multisport,
