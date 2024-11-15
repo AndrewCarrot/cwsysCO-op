@@ -11,8 +11,7 @@ public record CoachDTO(
         String lastName,
         String personalNumber,
         LocalDateTime createdDate,
-        LocalDateTime lastModifiedDate,
-        Set<Event> eventSet
+        LocalDateTime lastModifiedDate
 ) {
 
 }
