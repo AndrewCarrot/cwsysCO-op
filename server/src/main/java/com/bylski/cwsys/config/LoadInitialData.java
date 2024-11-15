@@ -33,18 +33,18 @@ public class LoadInitialData {
             Event event1 = new Event(
                     15,
                     2,
+                    90,
                     LocalDateTime.now(),
                     EventType.GROUP,
-                    90,
                     "Aspi"
             );
 
             Event event2 = new Event(
               20,
               3,
+                    90,
               LocalDateTime.of(2024,11,16,10,0),
               EventType.GROUP,
-              90,
                     "fundacja xyz"
             );
 

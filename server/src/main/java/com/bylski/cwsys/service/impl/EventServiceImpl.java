@@ -1,10 +1,12 @@
 package com.bylski.cwsys.service.impl;
 
+import com.bylski.cwsys.exception.ResourceAlreadyExistsException;
 import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.dto.EventDTOMapper;
+import com.bylski.cwsys.model.payload.EventPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.repository.EventRepository;
 import com.bylski.cwsys.service.inf.EventService;
@@ -43,8 +45,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void addEvent(Event event){
-        eventRepository.save(event);
+    public void addEvent(EventPayload eventPayload){
+        eventRepository.save(new Event(
+                eventPayload.numberOfParticipants(),
+                eventPayload.numberOfCoaches(),
+                eventPayload.durationInMinutes(),
+                eventPayload.dateTime(),
+                eventPayload.eventType(),
+                eventPayload.name()
+        ));
     }
 
     @Override
@@ -59,6 +68,11 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(()->new RuntimeException("Event with given ID doesn't exist"));
+
+        Optional<Coach> result = event.getCoachSet().stream().filter(c->c.getId().equals(coachId)).findAny();
+
+        if(result.isPresent())
+            throw new ResourceAlreadyExistsException("Coach","id",coachId);
 
         coach.getEventSet().add(event);
         event.getCoachSet().add(coach);

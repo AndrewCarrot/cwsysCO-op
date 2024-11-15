@@ -3,7 +3,9 @@ package com.bylski.cwsys.service.impl;
 import com.bylski.cwsys.exception.ResourceAlreadyExistsException;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.dto.CoachDTOMapper;
+import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.repository.CoachRepository;
+import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,12 +35,20 @@ class CoachServiceImplTest {
     @Captor
     private ArgumentCaptor<Coach> coachArgumentCaptor;
 
+    private CoachPayload coachPayload;
+    private CoachPayload coachPayload2;
+    private CoachPayload coachPayload3;
+
     private Coach coach;
     private Coach coach2;
     private Coach coach3;
 
     @BeforeEach
     public void setup(){
+        coachPayload = new CoachPayload("Marcin", "Bylski", "1");
+        coachPayload2 = new CoachPayload("Adrian","Sochacki","2");
+        coachPayload3 = new CoachPayload("Michał","Sochacki","3");
+
         coach = new Coach("Marcin", "Bylski", "1");
         coach2 = new Coach("Adrian","Sochacki","2");
         coach3 = new Coach("Michał","Sochacki","3");
@@ -49,7 +59,7 @@ class CoachServiceImplTest {
     void addCoachWithUniqueFirstAndLastName(){
         when(repo.findAllByLastName(anyString())).thenReturn(List.of());
 
-        service.addCoach(coach);
+        service.addCoach(coachPayload);
 
         verify(repo, times(1)).save(coach);
     }
@@ -59,7 +69,7 @@ class CoachServiceImplTest {
     void addCoachWithExistingLastButNotFirstName(){
         when(repo.findAllByLastName(anyString())).thenReturn(List.of(coach,coach2));
 
-        service.addCoach(coach3);
+        service.addCoach(coachPayload3);
 
         verify(repo, times(1)).save(coach3);
     }
@@ -69,7 +79,7 @@ class CoachServiceImplTest {
     void addCoachWithExistingFirstAndLastNameShouldThrowException() {
         given(repo.findAllByLastName(anyString())).willReturn(List.of(coach));
 
-        Exception e = assertThrows(ResourceAlreadyExistsException.class, () -> service.addCoach(coach));
+        Exception e = assertThrows(ResourceAlreadyExistsException.class, () -> service.addCoach(coachPayload));
         assertEquals("Coach already exists with first name & last name : 'Marcin Bylski'", e.getMessage());
     }
 

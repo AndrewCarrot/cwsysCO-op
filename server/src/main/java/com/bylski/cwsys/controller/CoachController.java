@@ -3,9 +3,11 @@ package com.bylski.cwsys.controller;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.CoachDTO;
+import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.service.inf.CoachService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hibernate.annotations.NotFound;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Set;
@@ -74,10 +77,18 @@ public class CoachController {
     }
 
 
-    @Operation(summary = "Do poprawy")
+    @Operation(summary = "Add new Coach")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "409", description = "Coach with given personal number exists in database",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = HttpClientErrorException.Conflict.class))
+                    })
+    })
+    @Parameter(name = "coachPayload", description = "RequestBody")
     @PostMapping("/new")
-    public void addNewCoach(@RequestBody Coach coach) throws Exception {
-        coachService.addCoach(coach);
+    public void addNewCoach(@RequestBody CoachPayload coachPayload) throws Exception {
+        coachService.addCoach(coachPayload);
     }
 
     @Operation(summary = "Delete coach based on provided ID")
