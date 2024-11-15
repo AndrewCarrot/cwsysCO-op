@@ -69,13 +69,20 @@ public class CoachController {
     ){
         return coachService.getCoachByLastName(lastName);
     }
-    //TODO
-    @Operation(summary = "to chyba do wyjebania będzie, albo do poprawy")
+
+    @Operation(summary = "Get events for given coach")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Coach with given ID does not exist in database",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
+                    })
+    })
+    @Parameter(name = "coachId",description = "PathVariable")
     @GetMapping("/event/{coachId}")
     public Set<Event> getEventsForGivenCoach(@PathVariable Long coachId){
         return coachService.getEventsForGivenCoach(coachId);
     }
-
 
     @Operation(summary = "Add new Coach")
     @ApiResponses({
