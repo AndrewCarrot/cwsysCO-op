@@ -10,6 +10,8 @@ public record EventDTO(
         int numberOfParticipants,
         int numberOfCoaches,
         int durationInMinutes,
+        LocalDateTime createdDate,
+        LocalDateTime lastModifiedDate,
         LocalDateTime dateTime,
         EventType eventType,
         String name,

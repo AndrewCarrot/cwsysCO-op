@@ -11,7 +11,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Coach {
+public class Coach extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Event {
+public class Event extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

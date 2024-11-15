@@ -7,7 +7,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -15,7 +18,7 @@ import java.util.Set;
 
 @Entity
 @Data
-public class Climber {
+public class Climber extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,6 +37,7 @@ public class Climber {
     @Column(nullable = false)
     @Pattern(regexp = "[0-9]{9}")
     private String phoneNumber;
+
     private String note;
     private String cardNumber;
     private boolean multisport;
