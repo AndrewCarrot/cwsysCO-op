@@ -8,6 +8,7 @@ import com.bylski.cwsys.model.dto.EventDTOMapper;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.repository.EventRepository;
 import com.bylski.cwsys.service.inf.EventService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
