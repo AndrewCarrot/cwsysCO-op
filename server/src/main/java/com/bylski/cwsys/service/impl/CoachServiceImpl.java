@@ -47,7 +47,8 @@ public class CoachServiceImpl implements CoachService {
         return coachRepository.findAll().stream().map(mapper).toList();
     }
 
-    //TODO jeśli nie pozbywamy się starych eventów z bazy ten set może zrobić się dosyć spory
+    //TODO jeśli nie pozbywamy się starych eventów z bazy ten set może zrobić się dosyć spory,
+    // plus coachDTO zawiera już eventSet
     @Override
     public Set<Event> getEventsForGivenCoach(Long coachId) {
         Coach result = coachRepository.findById(coachId)
