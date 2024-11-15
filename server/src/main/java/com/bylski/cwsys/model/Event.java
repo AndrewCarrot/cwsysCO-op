@@ -35,9 +35,9 @@ public class Event extends DateAudit{
 
     public Event(int numberOfParticipants,
                  int numberOfCoaches,
+                 int durationInMinutes,
                  LocalDateTime dateTime,
                  EventType eventType,
-                 int durationInMinutes,
                  String name) {
         this.numberOfParticipants = numberOfParticipants;
         this.numberOfCoaches = numberOfCoaches;

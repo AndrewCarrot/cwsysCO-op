@@ -2,6 +2,7 @@ package com.bylski.cwsys.controller;
 
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.EventDTO;
+import com.bylski.cwsys.model.payload.EventPayload;
 import com.bylski.cwsys.service.inf.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -54,11 +55,11 @@ public class EventController {
 
     @Operation(summary = "Add new Event")
     @Parameters({
-            @Parameter(name = "event", description = "RequestBody")
+            @Parameter(name = "eventPayload", description = "RequestBody")
     })
     @PostMapping("/new")
-    public void addNewEvent(@RequestBody Event event){
-        eventService.addEvent(event);
+    public void addNewEvent(@RequestBody EventPayload eventPayload){
+        eventService.addEvent(eventPayload);
     }
 
     @Operation(summary = "Delete event based on provided ID")
@@ -70,13 +71,26 @@ public class EventController {
         eventService.deleteEvent(eventId);
     }
 
-    @Operation(summary = "do poprawy")
+    @Operation(summary = "Add coach to event")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "404", description = "Event or Coach does not exists in database"),
+            @ApiResponse(responseCode = "409", description = "Given coach is already assigned to this event")
+    })
+    @Parameters({
+            @Parameter(name = "eventId", description = "RequestParam"),
+            @Parameter(name = "coachId", description = "RequestParam")
+    })
     @PatchMapping("/add-coach")
     public void addCoachToEvent(@RequestParam Long eventId, @RequestParam Long coachId){
         eventService.addCoach(eventId, coachId);
     }
 
-    @Operation(summary = "do poprawy")
+    @Operation(summary = "Remove coach from event")
+    @Parameters({
+            @Parameter(name = "eventId", description = "RequestParam"),
+            @Parameter(name = "coachId", description = "RequestParam")
+    })
     @PatchMapping("/remove-coach")
     public void removeCoachFromEvent(@RequestParam Long eventId, @RequestParam Long coachId){
         eventService.removeCoach(eventId, coachId);

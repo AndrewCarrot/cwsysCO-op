@@ -6,6 +6,7 @@ import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.CoachDTO;
 import com.bylski.cwsys.model.dto.CoachDTOMapper;
+import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.CoachService;
 import org.springframework.stereotype.Service;
@@ -27,13 +28,18 @@ public class CoachServiceImpl implements CoachService {
 
 
     @Override
-    public void addCoach(Coach coach){
-        List<Coach> existingCoaches = coachRepository.findAllByLastName(coach.getLastName());
-        for(Coach c: existingCoaches){
-            if(c.getFirstName().equals(coach.getFirstName()))
-                throw new ResourceAlreadyExistsException("Coach", "first name & last name",
-                        coach.getFirstName() + " " + coach.getLastName());
-        }
+    public void addCoach(CoachPayload coachPayload){
+        Optional<Coach> result = coachRepository.findByPersonalNumber(coachPayload.personalNumber());
+
+        if(result.isPresent())
+            throw new ResourceAlreadyExistsException("Coach","personal number",coachPayload.personalNumber());
+
+        Coach coach = new Coach(
+                coachPayload.firstName(),
+                coachPayload.lastName(),
+                coachPayload.personalNumber()
+        );
+
         coachRepository.save(coach);
     }
 
