@@ -1,0 +1,52 @@
+@use '../../styles/colors.scss' as colors;
+
+.login-container {
+    background-color: colors.$main;
+    height: 100vh;
+    .login-logo {
+        text-align: center;
+    }
+    .login-form {
+        margin-top: -30px;
+        background-color: colors.$white;
+        padding: 40px;
+        border-radius: 10px;
+        .login-form-password {
+            position: relative;
+            width: 100%;
+            .login-form-password-field {
+                width: 100%;
+              }
+            .login-form-password-icon {
+                position: absolute;
+                top: 50%;
+                right: 10px;
+                transform: translateY(-50%); 
+                cursor: pointer;
+                color: #6c757d;
+                font-size: 1.2em;
+                .--icon-visible{
+                    color: colors.$main;
+                }
+              }
+          }
+          .login-form-submit{
+            text-align: center;
+            .login-form-submit-button {
+                width: 224px;
+                background-color: colors.$main;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease, transform 0.3s ease;
+              
+                &:hover {
+                    background-color: #2A2E3B;
+                    transform: scale(1.05);
+                }
+              }
+              
+          }
+
+    }
+    
+}

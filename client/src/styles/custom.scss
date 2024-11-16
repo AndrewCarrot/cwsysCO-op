@@ -1,0 +1,7 @@
+$font-family-base: 'Poppins', sans-serif; 
+$primary: #1A2131;
+@import "bootstrap/scss/bootstrap";
+
+body {
+    font-family: $font-family-base;
+}
