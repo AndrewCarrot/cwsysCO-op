@@ -1,0 +1,67 @@
+@use "../../styles/colors.scss" as colors;
+
+.register-container {
+  background-color: colors.$main;
+  height: 100vh;
+  .register-logo {
+    text-align: center;
+    img {
+      width: 300px;
+    }
+  }
+  .register-form {
+    margin-top: -30px;
+    background-color: colors.$white;
+    padding: 40px;
+    border-radius: 10px;
+    .register-form-submit {
+      text-align: center;
+      .register-form-submit-button {
+        width: 224px;
+        background-color: colors.$main;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+
+        &:hover {
+          background-color: #2a2e3b;
+          transform: scale(1.05);
+        }
+      }
+    }
+    .invalid-feedback-date {
+      display: block;
+      margin-top: -10px;
+    }
+
+    .success-feedback {
+      text-align: center;
+      animation: fadeInScale 0.8s ease-in-out;
+
+      .register-form-add-another-climber {
+        margin-top: 10px;
+        font-size: 20px;
+        background-color: colors.$main;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+
+        &:hover {
+          background-color: #2a2e3b;
+          transform: scale(1.05);
+        }
+      }
+
+      @keyframes fadeInScale {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+    }
+  }
+}

@@ -1,42 +1,27 @@
-import { useState, useEffect } from 'react';
-import './App.css';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+import Dashboard from './components/Dashboard/Dashboard';
+import Users from './components/Users/Users';
+import Sections from './components/Sections/Sections';
+import Groups from './components/Groups/Groups';
+import NotFound from './components/NotFound/NotFound'; 
 
 function App() {
-  const [count, setCount] = useState(0);
-
-  // Use useEffect to fetch data when the component mounts
-  useEffect(() => {
-    // Fetch data from localhost:8080/coach/all
-    fetch('http://localhost:8080/api/coach/all')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Fetched data:', data); // Log the fetched data
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error); // Log any errors
-      });
-  }, []); // Empty dependency array means this runs once on component mount
-   
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path='/' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/users' element={<Users />} />
+        <Route path='/groups' element={<Groups />} />
+        <Route path='/sections' element={<Sections />} />
+
+        <Route path='*' element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
