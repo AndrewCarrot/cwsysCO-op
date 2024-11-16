@@ -1,0 +1,19 @@
+@use '../../styles/colors.scss' as colors;
+
+.not-found {
+    height: 100vh;
+    text-align: center;
+    color: colors.$white;
+    background-color: colors.$main;
+    &.body {
+        padding-top: 50px
+    }
+
+    a {
+        color: colors.$white;
+    }
+    
+    h1 {
+        margin-top: 20px;
+    }
+}
