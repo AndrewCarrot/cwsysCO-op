@@ -1,5 +1,6 @@
 package com.bylski.cwsys.config;
 
+import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.User;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ public class LoadInitialData {
     private final EventRepository eventRepository;
     private final CoachRepository coachRepository;
     private final UserRepository userRepository;
+    private final ClimberRepository climberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${SYSTEM_USER}")
@@ -36,6 +39,7 @@ public class LoadInitialData {
         this.coachRepository = coachRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.climberRepository = climberRepository;
     }
 
     @Bean
@@ -44,6 +48,8 @@ public class LoadInitialData {
             Coach coach1 = new Coach("Ryszard", "Suchomski","123423");
             Coach coach2 = new Coach("Adam", "Wysocki","3243443");
             Coach coach3 = new Coach("Ania", "Konradzka","43242343");
+
+            Climber climber = new Climber("Marcin","Bylski","email@wp.pl","692783635", LocalDate.of(1997,7,1));
 
             Event event1 = new Event(
                     15,
@@ -76,7 +82,7 @@ public class LoadInitialData {
 
 
            userRepository.save(new User(SYSTEM_USER, passwordEncoder.encode(SYSTEM_PASSWORD), SYSTEM_EMAIL));
-
+           climberRepository.save(climber);
         };
     }
 }

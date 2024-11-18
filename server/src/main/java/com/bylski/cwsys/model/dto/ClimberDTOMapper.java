@@ -24,4 +24,5 @@ public class ClimberDTOMapper implements Function<Climber, ClimberDTO> {
                 climber.getPasses(),
                 climber.getGroups());
     }
+
 }

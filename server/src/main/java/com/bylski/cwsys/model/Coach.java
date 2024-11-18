@@ -1,7 +1,6 @@
 package com.bylski.cwsys.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.NaturalId;
@@ -23,7 +22,7 @@ public class Coach extends DateAudit{
     private String lastName;
     @Column(nullable = false)
     @NaturalId
-    private String personalNumber;
+    private String pseudonym;
 
     @ManyToMany(cascade =
             {
@@ -50,10 +49,10 @@ public class Coach extends DateAudit{
     @JsonIgnore
     private Set<ClimbingGroup> climbingGroupSet = new HashSet<>();
 
-    public Coach(String firstName, String lastName, String personalNumber){
+    public Coach(String firstName, String lastName, String pseudonym){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.personalNumber = personalNumber;
+        this.pseudonym = pseudonym;
     }
 
     public Coach(){}
@@ -63,11 +62,11 @@ public class Coach extends DateAudit{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Coach coach = (Coach) o;
-        return Objects.equals(firstName, coach.firstName) && Objects.equals(lastName, coach.lastName) && Objects.equals(personalNumber, coach.personalNumber);
+        return Objects.equals(firstName, coach.firstName) && Objects.equals(lastName, coach.lastName) && Objects.equals(pseudonym, coach.pseudonym);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, personalNumber);
+        return Objects.hash(firstName, lastName, pseudonym);
     }
 }

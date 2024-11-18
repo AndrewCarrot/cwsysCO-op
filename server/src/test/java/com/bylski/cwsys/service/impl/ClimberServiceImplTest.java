@@ -7,7 +7,7 @@ import com.bylski.cwsys.model.dto.ClimberDTO;
 import com.bylski.cwsys.model.dto.ClimberDTOMapper;
 import com.bylski.cwsys.model.enums.ClassFrequency;
 import com.bylski.cwsys.model.enums.PassType;
-import com.bylski.cwsys.model.payload.ClimberPayload;
+import com.bylski.cwsys.model.payload.NewClimberPayload;
 import com.bylski.cwsys.repository.ClimberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -140,7 +140,7 @@ class ClimberServiceImplTest {
     @Test
     void addNewClimber() {
 
-        ClimberPayload payload = new ClimberPayload("Janusz","Sram", "sram@wp.pl","478647532",LocalDate.of(1965,10,14));
+        NewClimberPayload payload = new NewClimberPayload("Janusz","Sram", "sram@wp.pl","478647532",LocalDate.of(1965,10,14));
         given(repo.existsByEmail(anyString())).willReturn(false);
 
         service.addNewClimber(payload);

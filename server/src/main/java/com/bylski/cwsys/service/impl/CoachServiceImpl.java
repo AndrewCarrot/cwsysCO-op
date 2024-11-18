@@ -33,7 +33,7 @@ public class CoachServiceImpl implements CoachService {
 
     @Override
     public void addCoach(CoachPayload coachPayload){
-        Optional<Coach> result = coachRepository.findByPersonalNumber(coachPayload.personalNumber());
+        Optional<Coach> result = coachRepository.findByPseudonym(coachPayload.personalNumber());
 
         if(result.isPresent())
             throw new ResourceAlreadyExistsException("Coach","personal number",coachPayload.personalNumber());
