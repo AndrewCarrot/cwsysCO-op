@@ -55,9 +55,9 @@ class EventServiceImplTest {
         event = new Event(
                 15,
                 2,
+                90,
                 LocalDateTime.now(),
                 EventType.GROUP,
-                90,
                 "SP20"
         );
     }

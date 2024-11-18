@@ -43,6 +43,8 @@ class ClimberDTOMapperTest {
             LocalDate.of(1997,7,1),
             null,
             null,
+            null,
+            null,
             false,
             new HashSet<>(),
             new HashSet<>()
@@ -55,6 +57,8 @@ class ClimberDTOMapperTest {
             "emailXxX@wp.pl",
             "324484637",
             LocalDate.of(1995,4,20),
+            null,
+            null,
             null,
             null,
             false,

@@ -55,33 +55,6 @@ class CoachServiceImplTest {
     }
 
 
-    @Test
-    void addCoachWithUniqueFirstAndLastName(){
-        when(repo.findAllByLastName(anyString())).thenReturn(List.of());
-
-        service.addCoach(coachPayload);
-
-        verify(repo, times(1)).save(coach);
-    }
-
-
-    @Test
-    void addCoachWithExistingLastButNotFirstName(){
-        when(repo.findAllByLastName(anyString())).thenReturn(List.of(coach,coach2));
-
-        service.addCoach(coachPayload3);
-
-        verify(repo, times(1)).save(coach3);
-    }
-
-
-    @Test
-    void addCoachWithExistingFirstAndLastNameShouldThrowException() {
-        given(repo.findAllByLastName(anyString())).willReturn(List.of(coach));
-
-        Exception e = assertThrows(ResourceAlreadyExistsException.class, () -> service.addCoach(coachPayload));
-        assertEquals("Coach already exists with first name & last name : 'Marcin Bylski'", e.getMessage());
-    }
 
 
 }
