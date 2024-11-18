@@ -2,13 +2,17 @@ package com.bylski.cwsys.config;
 
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
+import com.bylski.cwsys.model.User;
 import com.bylski.cwsys.model.enums.EventType;
 import com.bylski.cwsys.repository.ClimberRepository;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.repository.EventRepository;
+import com.bylski.cwsys.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -17,10 +21,21 @@ import java.util.Set;
 public class LoadInitialData {
     private final EventRepository eventRepository;
     private final CoachRepository coachRepository;
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public LoadInitialData(EventRepository eventRepository, CoachRepository coachRepository, ClimberRepository climberRepository) {
+    @Value("${SYSTEM_USER}")
+    private String SYSTEM_USER;
+    @Value("${SYSTEM_PASSWORD}")
+    private String SYSTEM_PASSWORD;
+    @Value("${SYSTEM_EMAIL}")
+    private String SYSTEM_EMAIL;
+
+    public LoadInitialData(EventRepository eventRepository, CoachRepository coachRepository, ClimberRepository climberRepository, UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.eventRepository = eventRepository;
         this.coachRepository = coachRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
@@ -58,6 +73,9 @@ public class LoadInitialData {
             coachSet.forEach(coachRepository::save);
             eventSet.forEach(eventRepository::save);
 
+
+
+           userRepository.save(new User(SYSTEM_USER, passwordEncoder.encode(SYSTEM_PASSWORD), SYSTEM_EMAIL));
 
         };
     }
