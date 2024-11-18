@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface CoachRepository extends JpaRepository<Coach,Long> {
     List<Coach> findAllByLastName(String lastName);
     List<Coach> findAllByFirstName(String firstName);
-    Optional<Coach> findByPersonalNumber(String personalNumber);
+    Optional<Coach> findByPseudonym(String pseudonym);
 }

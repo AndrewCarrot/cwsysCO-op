@@ -14,7 +14,7 @@ public class CoachDTOMapper implements Function<Coach, CoachDTO> {
                 coach.getId(),
                 coach.getFirstName(),
                 coach.getLastName(),
-                coach.getPersonalNumber(),
+                coach.getPseudonym(),
                 coach.getCreatedDate(),
                 coach.getLastModifiedDate()
         );

@@ -2,7 +2,7 @@ package com.bylski.cwsys.model.payload;
 
 import java.time.LocalDate;
 
-public record ClimberPayload(
+public record NewClimberPayload(
         String firstName,
         String lastName,
         String email,

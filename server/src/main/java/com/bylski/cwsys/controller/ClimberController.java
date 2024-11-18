@@ -1,8 +1,9 @@
 package com.bylski.cwsys.controller;
 
+import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.Pass;
 import com.bylski.cwsys.model.dto.ClimberDTO;
-import com.bylski.cwsys.model.payload.ClimberPayload;
+import com.bylski.cwsys.model.payload.NewClimberPayload;
 import com.bylski.cwsys.service.inf.ClimberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,10 +13,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.hibernate.annotations.NotFound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Climber Controller", description = "Methods for Climber API")
@@ -70,7 +71,7 @@ public class ClimberController {
     @PostMapping("/new")
     @Parameters({@Parameter(name = "payload", description = "Request Body of a ClimberPayload")})
     public void addNewClimber(
-            @RequestBody ClimberPayload payload
+            @RequestBody NewClimberPayload payload
     ){
         climberService.addNewClimber(payload);
     }
@@ -111,5 +112,15 @@ public class ClimberController {
             @PathVariable Long climberId
     ){
         climberService.deleteClimber(climberId);
+    }
+
+    @Operation(summary = "Update climber data")
+    @Parameter(name = "climber", description = "RequestBody contains id of a climber which we want to update" +
+            " + new values for the climber's fields. You can pass any number of fields," +
+            " eg. if you want to update two specific fields, you don't have to pass entire climber object," +
+            " just these two fields")
+    @PatchMapping
+    public void updateClimberData(@RequestBody ClimberDTO payload){
+        climberService.updateClimberData(payload);
     }
 }

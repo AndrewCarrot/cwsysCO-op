@@ -12,6 +12,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +26,7 @@ public class Climber extends DateAudit{
 
     @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
             flags = Pattern.Flag.CASE_INSENSITIVE)
-    @NaturalId
+    @NaturalId(mutable = true)
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
@@ -90,6 +91,34 @@ public class Climber extends DateAudit{
         this.dateOfBirth =  dateOfBirth;
     }
 
+    public Climber(
+            Long id,
+            String email,
+            String firstName,
+            String lastName,
+            LocalDate dateOfBirth,
+            String phoneNumber,
+            LocalDateTime createdDate,
+            LocalDateTime lastModifiedDate,
+            String note,
+            String cardNumber,
+            boolean multisport,
+            Set<Pass> passes,
+            Set<ClimbingGroup> groups
+    ) {
+        super(createdDate, lastModifiedDate);
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.phoneNumber = phoneNumber;
+        this.note = note;
+        this.cardNumber = cardNumber;
+        this.multisport = multisport;
+        this.passes = passes;
+        this.groups = groups;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -19,4 +19,9 @@ public abstract class DateAudit implements Serializable {
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+    public DateAudit(){}
+    public DateAudit(LocalDateTime createdDate, LocalDateTime lastModifiedDate){
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }
