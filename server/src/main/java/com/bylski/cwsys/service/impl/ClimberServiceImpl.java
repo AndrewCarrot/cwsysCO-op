@@ -14,10 +14,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -35,7 +38,10 @@ public class ClimberServiceImpl implements ClimberService {
 
     @Override
     public Page<ClimberDTO> getAllClimbers(Pageable pageable) {
-        return new PageImpl<>(climberRepository.findAll(pageable).stream().map(climberDTOMapper).toList());
+        if(pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
+        List<ClimberDTO> climberDTOList = climberRepository.findAll(pageable).stream().map(climberDTOMapper).toList();
+        return new PageImpl<>(climberDTOList,pageable,climberDTOList.size());
     }
 
 
