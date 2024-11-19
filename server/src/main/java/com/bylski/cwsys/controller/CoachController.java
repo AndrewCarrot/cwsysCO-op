@@ -115,4 +115,8 @@ public class CoachController {
         return coachService.getClimbingGroups(coachId);
     }
 
+    @PatchMapping
+    public void updateCoachData(@RequestBody CoachDTO payload){
+        coachService.updateCoachData(payload);
+    }
 }

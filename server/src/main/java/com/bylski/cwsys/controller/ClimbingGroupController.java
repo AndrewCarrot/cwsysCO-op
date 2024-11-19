@@ -92,7 +92,7 @@ public class ClimbingGroupController {
 
     @Operation(
             summary = "Add climber to existing group",
-            description = "Request Example: api/group/add-climber?groupId=1&climberId=1"
+            description = "Request Example: api/group/add-climber?group-id=1&climber-id=1"
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
@@ -148,6 +148,11 @@ public class ClimbingGroupController {
     @PatchMapping("/remove-coach")
     public void removeCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
         groupService.removeCoach(groupId,coachId);
+    }
+
+    @PatchMapping
+    public void updateClimbingGroupData(@RequestParam ClimbingGroupDTO payload){
+        groupService.updateClimbingGroupData(payload);
     }
 
 }

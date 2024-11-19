@@ -16,4 +16,5 @@ public interface ClimbingGroupService {
     void removeClimber(Long groupId, Long climberId);
     void addCoach(Long groupId, Long coachId);
     void removeCoach(Long groupId, Long coachId);
+    void updateClimbingGroupData(ClimbingGroupDTO payload);
 }

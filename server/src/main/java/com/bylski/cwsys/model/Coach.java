@@ -20,8 +20,8 @@ public class Coach extends DateAudit{
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false)
-    @NaturalId
+    @Column(nullable = false, unique = true)
+    @NaturalId(mutable = true)
     private String pseudonym;
 
     @ManyToMany(cascade =

@@ -19,4 +19,5 @@ public interface CoachService {
     List<CoachDTO> getCoachByFirstName(String firstName);
     List<CoachDTO> getCoachByLastName(String lastName);
     List<ClimbingGroupDTO> getClimbingGroups(Long coachId);
+    void updateCoachData(CoachDTO payload);
 }

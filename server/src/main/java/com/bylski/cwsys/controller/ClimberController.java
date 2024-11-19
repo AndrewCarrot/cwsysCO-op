@@ -1,6 +1,5 @@
 package com.bylski.cwsys.controller;
 
-import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.Pass;
 import com.bylski.cwsys.model.dto.ClimberDTO;
 import com.bylski.cwsys.model.payload.NewClimberPayload;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.hibernate.annotations.NotFound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
