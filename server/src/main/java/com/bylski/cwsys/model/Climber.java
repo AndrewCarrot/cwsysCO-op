@@ -1,6 +1,6 @@
 package com.bylski.cwsys.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
@@ -19,6 +19,9 @@ import java.util.Set;
 
 @Entity
 @Data
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Climber extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,7 +61,6 @@ public class Climber extends DateAudit{
             joinColumns = { @JoinColumn(name = "climber_id") },
             inverseJoinColumns = { @JoinColumn(name = "group_id" ) }
     )
-    @JsonIgnore
     private Set<ClimbingGroup> groups = new HashSet<>();
 
     public Climber(){}
@@ -91,34 +93,34 @@ public class Climber extends DateAudit{
         this.dateOfBirth =  dateOfBirth;
     }
 
-    public Climber(
-            Long id,
-            String email,
-            String firstName,
-            String lastName,
-            LocalDate dateOfBirth,
-            String phoneNumber,
-            LocalDateTime createdDate,
-            LocalDateTime lastModifiedDate,
-            String note,
-            String cardNumber,
-            boolean multisport,
-            Set<Pass> passes,
-            Set<ClimbingGroup> groups
-    ) {
-        super(createdDate, lastModifiedDate);
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.phoneNumber = phoneNumber;
-        this.note = note;
-        this.cardNumber = cardNumber;
-        this.multisport = multisport;
-        this.passes = passes;
-        this.groups = groups;
-    }
+//    public Climber(
+//            Long id,
+//            String email,
+//            String firstName,
+//            String lastName,
+//            LocalDate dateOfBirth,
+//            String phoneNumber,
+//            LocalDateTime createdDate,
+//            LocalDateTime lastModifiedDate,
+//            String note,
+//            String cardNumber,
+//            boolean multisport,
+//            Set<Pass> passes,
+//            Set<ClimbingGroup> groups
+//    ) {
+//        super(createdDate, lastModifiedDate);
+//        this.id = id;
+//        this.email = email;
+//        this.firstName = firstName;
+//        this.lastName = lastName;
+//        this.dateOfBirth = dateOfBirth;
+//        this.phoneNumber = phoneNumber;
+//        this.note = note;
+//        this.cardNumber = cardNumber;
+//        this.multisport = multisport;
+//        this.passes = passes;
+//        this.groups = groups;
+//    }
 
     @Override
     public boolean equals(Object o) {

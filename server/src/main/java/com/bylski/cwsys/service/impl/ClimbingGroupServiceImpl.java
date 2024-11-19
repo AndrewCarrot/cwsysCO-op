@@ -6,13 +6,14 @@ import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.ClimbingGroup;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
-import com.bylski.cwsys.model.dto.ClimbingGroupDTOMapper;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
 import com.bylski.cwsys.repository.ClimberRepository;
 import com.bylski.cwsys.repository.ClimbingGroupRepository;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.ClimbingGroupService;
+import com.bylski.cwsys.utilz.Patcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,31 +25,46 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
     private final ClimbingGroupRepository climbingGroupRepository;
     private final ClimberRepository climberRepository;
     private final CoachRepository coachRepository;
-    private final ClimbingGroupDTOMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    public ClimbingGroupServiceImpl(ClimbingGroupRepository climbingGroupRepository, ClimberRepository climberRepository, CoachRepository coachRepository, ClimbingGroupDTOMapper mapper) {
+    public ClimbingGroupServiceImpl(
+            ClimbingGroupRepository climbingGroupRepository,
+            ClimberRepository climberRepository,
+            CoachRepository coachRepository,
+            ObjectMapper objectMapper
+    ) {
         this.climbingGroupRepository = climbingGroupRepository;
         this.climberRepository = climberRepository;
         this.coachRepository = coachRepository;
-        this.mapper = mapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public List<ClimbingGroupDTO> getGroups() {
-        return climbingGroupRepository.findAll().stream().map(mapper).toList();
+        return climbingGroupRepository
+                .findAll()
+                .stream()
+                .map(o->objectMapper.convertValue(o,ClimbingGroupDTO.class))
+                .toList();
     }
 
     @Override
     public ClimbingGroupDTO getGroupById(Long id) {
-        Optional<ClimbingGroupDTO> result = climbingGroupRepository.findById(id).map(mapper);
+        Optional<ClimbingGroup> result = climbingGroupRepository.findById(id);
+
         if(result.isEmpty())
             throw new ResourceNotFoundException("Group","id",id);
-        return result.get();
+
+        return objectMapper.convertValue(result.get(),ClimbingGroupDTO.class);
     }
 
     @Override
     public List<ClimbingGroupDTO> getGroupByType(ClimbingGroupType type) {
-        return climbingGroupRepository.getClimbingGroupByClimbingGroupType(type).stream().map(mapper).toList();
+        return climbingGroupRepository
+                .getClimbingGroupByClimbingGroupType(type)
+                .stream()
+                .map(o->objectMapper.convertValue(o,ClimbingGroupDTO.class))
+                .toList();
     }
 
     @Override
@@ -78,7 +94,7 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
                 .orElseThrow(()->new ResourceNotFoundException("Climber","id",climberId));
         group.getClimbers().add(climber);
         climber.getGroups().add(group);
-        climbingGroupRepository.save(group);
+        climberRepository.save(climber);
     }
 
     @Override
@@ -114,5 +130,20 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
         group.getCoachSet().remove(coach);
         coach.getClimbingGroupSet().remove(group);
         climbingGroupRepository.save(group);
+    }
+
+    @Override
+    public void updateClimbingGroupData(ClimbingGroupDTO payload) {
+        ClimbingGroup existing = climbingGroupRepository.findById(payload.id())
+                .orElseThrow(()->new ResourceNotFoundException("Climbing group","id",payload.id()));
+
+        ClimbingGroup incomplete = objectMapper.convertValue(payload, ClimbingGroup.class);
+
+        try{
+            Patcher.objectPatcher(existing,incomplete);
+            climbingGroupRepository.save(existing);
+        }catch(Exception e){
+            e.getCause();
+        }
     }
 }

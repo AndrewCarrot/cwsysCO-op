@@ -15,4 +15,5 @@ public interface EventService{
     void deleteEvent(Long eventId);
     void addCoach(Long eventId, Long coachId);
     void removeCoach(Long eventId, Long coachId);
+    void updateEventData(EventDTO payload);
 }

@@ -96,5 +96,10 @@ public class EventController {
         eventService.removeCoach(eventId, coachId);
     }
 
+    @PatchMapping
+    public void updateEventData(@RequestBody EventDTO payload){
+        eventService.updateEventData(payload);
+    }
+
 
 }

@@ -5,12 +5,13 @@ import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
-import com.bylski.cwsys.model.dto.ClimbingGroupDTOMapper;
 import com.bylski.cwsys.model.dto.CoachDTO;
 import com.bylski.cwsys.model.dto.CoachDTOMapper;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.CoachService;
+import com.bylski.cwsys.utilz.Patcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,12 +23,16 @@ public class CoachServiceImpl implements CoachService {
 
     private final CoachRepository coachRepository;
     private final CoachDTOMapper coachDTOMapper;
-    private final ClimbingGroupDTOMapper climbingGroupDTOMapper;
+    private final ObjectMapper objectMapper;
 
-    public CoachServiceImpl(CoachRepository coachRepository, CoachDTOMapper mapper, ClimbingGroupDTOMapper climbingGroupMappper) {
+    public CoachServiceImpl(
+            CoachRepository coachRepository,
+            CoachDTOMapper mapper,
+            ObjectMapper objectMapper
+    ) {
         this.coachRepository = coachRepository;
         this.coachDTOMapper = mapper;
-        this.climbingGroupDTOMapper = climbingGroupMappper;
+        this.objectMapper = objectMapper;
     }
 
 
@@ -88,7 +93,27 @@ public class CoachServiceImpl implements CoachService {
         Coach result = coachRepository.findById(coachId)
                 .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
 
-        return result.getClimbingGroupSet().stream().map(climbingGroupDTOMapper).toList();
+        return result
+                .getClimbingGroupSet()
+                .stream()
+                .map(o->objectMapper.convertValue(o,ClimbingGroupDTO.class))
+                .toList();
     }
 
+    @Override
+    public void updateCoachData(CoachDTO payload) {
+        Coach existing = coachRepository.findById(payload.id())
+                .orElseThrow(()->new ResourceNotFoundException("Coach","id",payload.id()));
+        if (payload.pseudonym() != null && payload.pseudonym().equals(existing.getPseudonym()))
+                throw new ResourceAlreadyExistsException("Coach","pseudonym",payload.pseudonym());
+
+        Coach incomplete = objectMapper.convertValue(payload,Coach.class);
+
+        try{
+            Patcher.objectPatcher(existing,incomplete);
+            coachRepository.save(existing);
+        }catch (Exception e){
+            e.getCause();
+        }
+    }
 }

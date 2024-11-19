@@ -2,7 +2,7 @@ package com.bylski.cwsys.model;
 
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.enums.DayOfWeek;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +14,9 @@ import java.util.Set;
 
 @Entity
 @Data
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class ClimbingGroup extends DateAudit{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +33,6 @@ public class ClimbingGroup extends DateAudit{
     private LocalDate endDate;
 
     @ManyToMany(mappedBy = "groups")
-    @JsonIgnore
     private Set<Climber> climbers = new HashSet<>();
 
     @ManyToMany(mappedBy = "climbingGroupSet")

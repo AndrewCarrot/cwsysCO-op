@@ -3,6 +3,7 @@ package com.bylski.cwsys.model.dto;
 import com.bylski.cwsys.model.DateAudit;
 import com.bylski.cwsys.model.ClimbingGroup;
 import com.bylski.cwsys.model.Pass;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public record ClimberDTO(
         String cardNumber,
         boolean multisport,
         Set<Pass> passes,
+        @JsonIgnoreProperties("climbers")
         Set<ClimbingGroup> groups
 ) {
 }

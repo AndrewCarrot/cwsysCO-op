@@ -11,6 +11,7 @@ public class EventDTOMapper implements Function<Event, EventDTO> {
     @Override
     public EventDTO apply(Event event) {
         return new EventDTO(
+                event.getId(),
                 event.getNumberOfParticipants(),
                 event.getNumberOfCoaches(),
                 event.getDurationInMinutes(),

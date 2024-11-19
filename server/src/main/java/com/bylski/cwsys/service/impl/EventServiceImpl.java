@@ -10,6 +10,8 @@ import com.bylski.cwsys.model.payload.EventPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.repository.EventRepository;
 import com.bylski.cwsys.service.inf.EventService;
+import com.bylski.cwsys.utilz.Patcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,11 +28,13 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final CoachRepository coachRepository;
     private final EventDTOMapper mapper;
+    private final ObjectMapper objectMapper;
 
-    public EventServiceImpl(EventRepository eventRepository, CoachRepository coachRepository, EventDTOMapper mapper) {
+    public EventServiceImpl(EventRepository eventRepository, CoachRepository coachRepository, EventDTOMapper mapper, ObjectMapper objectMapper) {
         this.eventRepository = eventRepository;
         this.coachRepository = coachRepository;
         this.mapper = mapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -96,5 +100,21 @@ public class EventServiceImpl implements EventService {
         event.getCoachSet().remove(coach);
         coach.getEventSet().remove(event);
         coachRepository.save(coach);
+    }
+
+    @Override
+    public void updateEventData(EventDTO payload) {
+        Event existing = eventRepository.findById(payload.id())
+                .orElseThrow(()->new ResourceNotFoundException("Event","id",payload.id()));
+
+        Event incomplete = objectMapper.convertValue(payload, Event.class);
+
+        try{
+            Patcher.objectPatcher(existing,incomplete);
+            eventRepository.save(existing);
+        }catch(Exception e){
+            e.getCause();
+        }
+
     }
 }

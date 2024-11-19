@@ -1,28 +1,27 @@
 package com.bylski.cwsys.utilz;
 
-import com.bylski.cwsys.model.Climber;
-import com.bylski.cwsys.model.dto.ClimberDTO;
+
+import com.bylski.cwsys.exception.IncompatibleClassException;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 @Component
 public class Patcher {
-    public static void climberPatcher(Climber existing, Climber incomplete) throws IllegalAccessException {
-        //GET THE COMPILED VERSION OF THE CLASS
-        Class<?> climberClass= Climber.class;
-        Field[] climberFields=climberClass.getDeclaredFields();
 
-        for(Field field : climberFields){
+    public  static <T> void objectPatcher(T existing, T incomplete) throws IllegalAccessException {
+        if(existing.getClass() != incomplete.getClass())
+            throw new IncompatibleClassException("Cannot use patcher on objects from different classes");
 
-            //CANT ACCESS IF THE FIELD IS PRIVATE
+        Class<?> objectClass = existing.getClass();
+        Field[] objectFields = objectClass.getDeclaredFields();
+
+        for(Field field:objectFields){
             field.setAccessible(true);
 
-            //CHECK IF THE VALUE OF THE FIELD IS NOT NULL, IF NOT UPDATE EXISTING INTERN
-            Object value=field.get(incomplete);
+            Object value = field.get(incomplete);
             if(value!=null){
                 field.set(existing,value);
             }
-            //MAKE THE FIELD PRIVATE AGAIN
             field.setAccessible(false);
         }
     }

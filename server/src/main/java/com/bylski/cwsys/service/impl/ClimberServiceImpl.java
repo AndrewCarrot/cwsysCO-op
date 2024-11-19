@@ -5,43 +5,32 @@ import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.Pass;
 import com.bylski.cwsys.model.dto.ClimberDTO;
-import com.bylski.cwsys.model.dto.ClimberDTOMapper;
 import com.bylski.cwsys.model.payload.NewClimberPayload;
 import com.bylski.cwsys.repository.ClimberRepository;
 import com.bylski.cwsys.service.inf.ClimberService;
 import com.bylski.cwsys.utilz.Patcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ClimberServiceImpl implements ClimberService {
     private final ClimberRepository climberRepository;
-    private final ClimberDTOMapper climberDTOMapper;
     private final ObjectMapper objectMapper;
 
-
-    public ClimberServiceImpl(ClimberRepository climberRepository, ClimberDTOMapper mapper) {
+    public ClimberServiceImpl(ClimberRepository climberRepository, ObjectMapper objectMapper) {
         this.climberRepository = climberRepository;
-        this.climberDTOMapper = mapper;
-        objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     @Override
     public Page<ClimberDTO> getAllClimbers(Pageable pageable) {
-        if(pageable.isUnpaged())
-            pageable = PageRequest.of(0,10);
-        List<ClimberDTO> climberDTOList = climberRepository.findAll(pageable).stream().map(climberDTOMapper).toList();
-        return new PageImpl<>(climberDTOList,pageable,climberDTOList.size());
+        return climberRepository.
+                findAll(pageable).
+                map(o->objectMapper.convertValue(o, ClimberDTO.class));
     }
 
 
@@ -50,7 +39,7 @@ public class ClimberServiceImpl implements ClimberService {
         Optional<Climber> result = climberRepository.findByCardNumber(cardNumber);
         if(result.isEmpty())
             throw new ResourceNotFoundException("Climber","card number", cardNumber);
-        return result.stream().map(climberDTOMapper).findFirst().get();
+        return objectMapper.convertValue(result.get(), ClimberDTO.class);
     }
 
     @Override
@@ -96,15 +85,10 @@ public class ClimberServiceImpl implements ClimberService {
         if(payload.cardNumber() != null && climberRepository.existsByCardNumber(payload.cardNumber()))
             throw new ResourceAlreadyExistsException("Climber","cardNumber", payload.email());
 
-
-        // manually register the JavaTimeModule() to make Jackson support Java 8 date time APIs.
-        objectMapper.registerModule(new JavaTimeModule());
-        Climber incomplete = Stream.of(payload).map(o->objectMapper.convertValue(o,Climber.class)).findFirst().get();
-
+        Climber incomplete = objectMapper.convertValue(payload,Climber.class);
 
         try{
-            Patcher.climberPatcher(existing,incomplete);
-
+            Patcher.objectPatcher(existing,incomplete);
             climberRepository.save(
                     existing
             );

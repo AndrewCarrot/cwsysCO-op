@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public record EventDTO(
+        Long id,
         int numberOfParticipants,
         int numberOfCoaches,
         int durationInMinutes,
