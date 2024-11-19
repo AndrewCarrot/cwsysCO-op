@@ -13,9 +13,11 @@ import com.bylski.cwsys.service.inf.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +35,10 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Page<EventDTO> getAllEvents(Pageable pageable) {
-        return new PageImpl<>(eventRepository.findAll(pageable).stream().map(mapper).toList());
+        if (pageable.isUnpaged())
+                pageable = PageRequest.of(0,10);
+        List<EventDTO> eventDTOList = eventRepository.findAll(pageable).stream().map(mapper).toList();
+        return new PageImpl<>(eventDTOList,pageable,eventDTOList.size());
     }
 
     @Override
