@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -36,10 +37,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String authHeader = request.getHeader("Authorization");
             String token = null;
             String username = null;
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+
+            if(authHeader == null)
+                throw new RuntimeException("Auth header is missing");
+
+
+            if (authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
                 username = JwtHelper.extractUsername(token);
             }
+
 //      If the accessToken is null. It will pass the request to next filter in the chain.
 //      Any login and signup requests will not have jwt token in their header, therefore they will be passed to next filter chain.
             if (token == null) {
