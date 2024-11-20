@@ -1,5 +1,6 @@
 package com.bylski.cwsys.utilz;
 
+import com.bylski.cwsys.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -17,10 +18,10 @@ public class JwtHelper {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final int MINUTES = 60;
 
-    public static String generateToken(String email) {
+    public static String generateToken(String usernameOrEmail) {
         var now = Instant.now();
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(usernameOrEmail)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(now.plus(MINUTES, ChronoUnit.MINUTES)))
                 .signWith(SECRET_KEY,SignatureAlgorithm.HS256)
@@ -31,9 +32,9 @@ public class JwtHelper {
         return getTokenBody(token).getSubject();
     }
 
-    public static Boolean validateToken(String token, UserDetails userDetails) {
+    public static Boolean validateToken(String token, User userDetails) {
         final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return username.equals(userDetails.getUsername()) || username.equals(userDetails.getEmail()) && !isTokenExpired(token);
     }
 
     private static Claims getTokenBody(String token) {

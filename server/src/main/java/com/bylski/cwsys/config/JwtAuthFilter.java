@@ -1,6 +1,7 @@
 package com.bylski.cwsys.config;
 
 import com.bylski.cwsys.exception.AccessDeniedException;
+import com.bylski.cwsys.model.User;
 import com.bylski.cwsys.model.dto.ApiErrorResponse;
 import com.bylski.cwsys.service.impl.UserDetailsServiceImpl;
 import com.bylski.cwsys.utilz.JwtHelper;
@@ -47,7 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 //       If any accessToken is present, then it will validate the token and then authenticate the request in security context
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                User userDetails = (User) userDetailsService.loadUserByUsername(username);
                 if (JwtHelper.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, null);
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
