@@ -62,6 +62,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/auth/validate/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/climber/new/**").permitAll()
                         //.requestMatchers(HttpMethod.GET,"/api/auth/test/**").permitAll()
 //            our private endpoints
                         .anyRequest().authenticated())
