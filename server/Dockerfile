@@ -14,11 +14,10 @@ WORKDIR /app
 # Copy the source code into the container
 COPY . .
 
-# Run Maven to build the application (skipping tests)
-RUN mvn clean package -DskipTests
+# Run Maven to build the application (skipping tests and test compilation)
+RUN mvn clean package -Dmaven.test.skip=true
 
 # Copy the JAR file to the final location
-# Adjust the path if the output JAR name is different
 RUN cp target/*.jar application.jar
 
 # Set the maximum heap size for Java

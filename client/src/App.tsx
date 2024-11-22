@@ -5,7 +5,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Users from './components/Users/Users';
 import Sections from './components/Sections/Sections';
 import Groups from './components/Groups/Groups';
-import NotFound from './components/NotFound/NotFound'; 
+import NotFound from './components/NotFound/NotFound';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'; // Import the new ProtectedRoute
 
 function App() {
   return (
@@ -14,10 +15,38 @@ function App() {
         <Route path='/' element={<Login />} />
         <Route path='/register' element={<Register />} />
 
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/users' element={<Users />} />
-        <Route path='/groups' element={<Groups />} />
-        <Route path='/sections' element={<Sections />} />
+        <Route
+          path='/dashboard'
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/groups'
+          element={
+            <ProtectedRoute>
+              <Groups />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/users'
+          element={
+            <ProtectedRoute>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/sections'
+          element={
+            <ProtectedRoute>
+              <Sections />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path='*' element={<NotFound />} />
       </Routes>

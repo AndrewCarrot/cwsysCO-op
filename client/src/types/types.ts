@@ -5,3 +5,8 @@ export interface climberData {
     phoneNumber: string;
     dateOfBirth: Date | null;
   }
+
+export interface loginData {
+    usernameOrEmail: string,
+    password: string
+  }
