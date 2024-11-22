@@ -7,14 +7,13 @@ import com.bylski.cwsys.service.inf.ClimberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hibernate.annotations.NotFound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Climber Controller", description = "Methods for Climber API")
@@ -42,19 +41,21 @@ public class ClimberController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Given card number is not in the system",
-                    content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-            })
+            @ApiResponse(responseCode = "400")
     })
     @GetMapping("/{cardNumber}")
-    public ClimberDTO getClimberByCardNumber(
+    public ResponseEntity<?> getClimberByCardNumber(
             @Parameter(
                     description = "climbers assigned physical card number"
             )
             @PathVariable String cardNumber
     ){
-        return climberService.getClimberByCardNumber(cardNumber);
+        try {
+            ClimberDTO climberDTO = climberService.getClimberByCardNumber(cardNumber);
+            return new ResponseEntity<>(climberDTO, HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 
@@ -64,14 +65,19 @@ public class ClimberController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "409", description = "Climber with given email already exists")
+            @ApiResponse(responseCode = "400")
     })
     @PostMapping("/new")
     @Parameters({@Parameter(name = "payload", description = "Request Body of a ClimberPayload")})
-    public void addNewClimber(
+    public ResponseEntity<?> addNewClimber(
             @RequestBody NewClimberPayload payload
     ){
-        climberService.addNewClimber(payload);
+        try {
+            climberService.addNewClimber(payload);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return ResponseEntity.ok("Successfully added new climber");
     }
 
     @Operation(
@@ -79,28 +85,28 @@ public class ClimberController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Climber with given id does not exist"),
-            @ApiResponse(
-                    responseCode = "409",
-                    description = "Climber already has pass with given type, you can't have two passes with the same type"
-            )
+            @ApiResponse(responseCode = "400")
     })
     @Parameters({
            @Parameter(name = "pass", description = "request body of a Pass entity",required = true)
     })
-    @PostMapping("/{id}/pass")
-    public void addNewPass(
-            @Parameter(name = "id", description = "ID of a climber", required = true)
+    @PostMapping("/{climberId}/pass")
+    public ResponseEntity<String> addNewPass(
+            @Parameter(name = "climberId", description = "ID of a climber", required = true)
             @PathVariable Long climberId,
             @RequestBody Pass pass
     ){
-        climberService.addNewPass(climberId,pass);
+        try{
+            climberService.addNewPass(climberId,pass);
+            return ResponseEntity.ok("Pass successfully added to climber");
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Operation(
             summary = "Delete existing climber "
     )
-    @ApiResponse
     @DeleteMapping("/{climberId}")
     public void deleteClimber(
             @Parameter(
@@ -117,8 +123,17 @@ public class ClimberController {
             " + new values for the climber's fields. You can pass any number of fields," +
             " eg. if you want to update two specific fields, you don't have to pass entire climber object," +
             " just these two fields")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400")
+    })
     @PatchMapping
-    public void updateClimberData(@RequestBody ClimberDTO payload){
-        climberService.updateClimberData(payload);
+    public ResponseEntity<?> updateClimberData(@RequestBody ClimberDTO payload){
+        try {
+            climberService.updateClimberData(payload);
+        }catch(Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Successfully updated climber");
     }
 }

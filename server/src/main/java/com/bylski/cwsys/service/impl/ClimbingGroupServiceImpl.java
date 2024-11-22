@@ -142,7 +142,7 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
         try{
             Patcher.objectPatcher(existing,incomplete);
             climbingGroupRepository.save(existing);
-        }catch(Exception e){
+        }catch(IllegalAccessException e){
             e.getCause();
         }
     }

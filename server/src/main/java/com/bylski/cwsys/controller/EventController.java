@@ -15,7 +15,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hibernate.annotations.NotFound;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.http.HttpResponse;
 
 @Tag(name = "Event Controller", description = "Methods for Event API")
 @RestController
@@ -33,24 +38,30 @@ public class EventController {
                     "it takes argument Pageable"
     )
     @GetMapping("/all")
-    public Page<EventDTO> getAllEvents(Pageable pageable){
-        return eventService.getAllEvents(pageable);
+    public ResponseEntity<?> getAllEvents(Pageable pageable){
+        try{
+            return ResponseEntity.ok().body(eventService.getAllEvents(pageable));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
     }
 
     @Operation(summary = "Get event by ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Event with given ID does not exist in database",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @GetMapping("/{eventId}")
-    public EventDTO getEventById(
+    public ResponseEntity<?> getEventById(
             @Parameter(name = "eventId", description = "PathVariable")
             @PathVariable Long eventId
     ){
-        return eventService.getEventById(eventId);
+        try {
+            return ResponseEntity.ok().body(eventService.getEventById(eventId));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Add new Event")
@@ -58,8 +69,13 @@ public class EventController {
             @Parameter(name = "eventPayload", description = "RequestBody")
     })
     @PostMapping("/new")
-    public void addNewEvent(@RequestBody EventPayload eventPayload){
-        eventService.addEvent(eventPayload);
+    public ResponseEntity<?> addNewEvent(@RequestBody EventPayload eventPayload){
+        try {
+            eventService.addEvent(eventPayload);
+            return ResponseEntity.ok().body("Event added successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Delete event based on provided ID")
@@ -68,22 +84,26 @@ public class EventController {
             @Parameter(name = "eventId", description = "PathVariable")
             @PathVariable Long eventId
     ){
-        eventService.deleteEvent(eventId);
+             eventService.deleteEvent(eventId);
     }
 
     @Operation(summary = "Add coach to event")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Event or Coach does not exists in database"),
-            @ApiResponse(responseCode = "409", description = "Given coach is already assigned to this event")
+            @ApiResponse(responseCode = "400"),
     })
     @Parameters({
             @Parameter(name = "event-id", description = "RequestParam"),
             @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/add-coach")
-    public void addCoachToEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
-        eventService.addCoach(eventId, coachId);
+    public ResponseEntity<?> addCoachToEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
+        try {
+            eventService.addCoach(eventId, coachId);
+            return ResponseEntity.ok().body("Coach added successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Remove coach from event")
@@ -92,13 +112,27 @@ public class EventController {
             @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/remove-coach")
-    public void removeCoachFromEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
-        eventService.removeCoach(eventId, coachId);
+    public ResponseEntity<?> removeCoachFromEvent(@RequestParam(name = "event-id") Long eventId, @RequestParam(name = "coach-id") Long coachId){
+        try {
+            eventService.removeCoach(eventId, coachId);
+            return ResponseEntity.ok().body("Coach removed successfully");
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
+    @Operation(summary = "update Event Data")
+    @Parameter(name = "payload", description = "Provide any number of fields from EventDTO model which do you want" +
+            " to update")
     @PatchMapping
-    public void updateEventData(@RequestBody EventDTO payload){
-        eventService.updateEventData(payload);
+    public ResponseEntity<?> updateEventData(@RequestBody EventDTO payload){
+        try{
+            eventService.updateEventData(payload);
+            return ResponseEntity.ok().body("Event data updated successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
     }
 
 

@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.coyote.Response;
 import org.hibernate.annotations.NotFound;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -40,17 +42,18 @@ public class CoachController {
     @Operation(summary = "Get coach with given ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Coach with given ID does not exist in database",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @GetMapping("/{coachId}")
-    public CoachDTO getCoachById(
+    public ResponseEntity<?> getCoachById(
             @Parameter(name = "coachId", description = "PathVariable")
             @PathVariable Long coachId
     ){
-        return coachService.getCoachById(coachId);
+        try{
+            return ResponseEntity.ok().body(coachService.getCoachById(coachId));
+        }catch(Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Returns List of coaches based on provided name")
@@ -74,29 +77,32 @@ public class CoachController {
     @Operation(summary = "Get events for given coach")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Coach with given ID does not exist in database",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @Parameter(name = "coachId",description = "PathVariable")
     @GetMapping("/event/{coachId}")
-    public Set<Event> getEventsForGivenCoach(@PathVariable Long coachId){
-        return coachService.getEventsForGivenCoach(coachId);
+    public ResponseEntity<?> getEventsForGivenCoach(@PathVariable Long coachId){
+        try{
+            return ResponseEntity.ok().body(coachService.getEventsForGivenCoach(coachId));
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Add new Coach")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "409", description = "Coach with given personal number exists in database",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = HttpClientErrorException.Conflict.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @Parameter(name = "coachPayload", description = "RequestBody")
     @PostMapping("/new")
-    public void addNewCoach(@RequestBody CoachPayload coachPayload) throws Exception {
-        coachService.addCoach(coachPayload);
+    public ResponseEntity<?> addNewCoach(@RequestBody CoachPayload coachPayload){
+        try {
+            coachService.addCoach(coachPayload);
+            return ResponseEntity.ok().body("Coach added successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Delete coach based on provided ID")
@@ -111,12 +117,24 @@ public class CoachController {
     @Operation(summary = "Get climbing groups for given coach")
     @Parameter(name = "coachId", description = "PathVariable")
     @GetMapping("/climbing-group/{coachId}")
-    public List<ClimbingGroupDTO> getClimbingGroups(@PathVariable Long coachId){
-        return coachService.getClimbingGroups(coachId);
+    public ResponseEntity<?> getClimbingGroups(@PathVariable Long coachId){
+        try {
+            return ResponseEntity.ok().body(coachService.getClimbingGroups(coachId));
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
+    @Operation(summary = "Update coach data")
+    @Parameter(name = "payload", description = "Provide any number of fields from CoachDTO model, just those which you want" +
+            " to update")
     @PatchMapping
-    public void updateCoachData(@RequestBody CoachDTO payload){
-        coachService.updateCoachData(payload);
+    public ResponseEntity<?> updateCoachData(@RequestBody CoachDTO payload){
+        try {
+            coachService.updateCoachData(payload);
+            return ResponseEntity.ok().body("Coach data updated successfully");
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 }

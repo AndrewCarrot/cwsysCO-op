@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hibernate.annotations.NotFound;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,17 +38,20 @@ public class ClimbingGroupController {
     @Operation(summary = "Returns ClimbingGroup with given id")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Group with given ID does not exist in database",
-                    content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-            })
+            @ApiResponse(responseCode = "400")
     })
     @GetMapping("/{groupId}")
-    public ClimbingGroupDTO getGroupById(
+    public ResponseEntity<?> getGroupById(
             @Parameter(name = "groupId", description = "ID of a group you want to retrieve")
             @PathVariable Long groupId
     ){
-        return groupService.getGroupById(groupId);
+        ClimbingGroupDTO climbingGroupDTO;
+        try {
+            climbingGroupDTO = groupService.getGroupById(groupId);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(climbingGroupDTO);
     }
 
     @Operation(
@@ -74,11 +78,16 @@ public class ClimbingGroupController {
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "409", description = "Group with given name already exists in database")
+            @ApiResponse(responseCode = "400")
     })
     @PostMapping("/new")
-    public void addNewGroup(@RequestBody ClimbingGroupPayload groupPayload){
-        groupService.addGroup(groupPayload);
+    public ResponseEntity<?> addNewGroup(@RequestBody ClimbingGroupPayload groupPayload){
+        try {
+            groupService.addGroup(groupPayload);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("New group added successfully");
     }
 
     @Operation(summary = "Delete group with given ID")
@@ -96,18 +105,20 @@ public class ClimbingGroupController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Climber or Group not found with given id",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @Parameters({
             @Parameter(name = "group-id", description = "RequestParam"),
             @Parameter(name = "climber-id", description = "RequestParam")
     })
     @PatchMapping("/add-climber")
-    public void addClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "group-id") Long climberId){
-        groupService.addClimber(groupId,climberId);
+    public ResponseEntity<?> addClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "climber-id") Long climberId){
+        try {
+            groupService.addClimber(groupId, climberId);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Climber added successfully");
     }
 
     @Operation(
@@ -120,14 +131,16 @@ public class ClimbingGroupController {
     })
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "404", description = "Climber or Group not found with given id",
-                    content = {
-                            @Content(mediaType = "application/json", schema = @Schema(implementation = NotFound.class))
-                    })
+            @ApiResponse(responseCode = "400")
     })
     @PatchMapping("/remove-climber")
-    public void removeClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "group-id") Long climberId){
-        groupService.removeClimber(groupId,climberId);
+    public ResponseEntity<?> removeClimber(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "climber-id") Long climberId){
+        try {
+            groupService.removeClimber(groupId, climberId);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Climber removed successfully");
     }
 
     @Operation(summary = "Add coach to group")
@@ -136,8 +149,13 @@ public class ClimbingGroupController {
             @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/add-coach")
-    public void addCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
-        groupService.addCoach(groupId,coachId);
+    public ResponseEntity<?> addCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
+        try {
+            groupService.addCoach(groupId,coachId);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Coach added successfully");
     }
 
     @Operation(summary = "remove coach from group")
@@ -146,13 +164,26 @@ public class ClimbingGroupController {
             @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/remove-coach")
-    public void removeCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
-        groupService.removeCoach(groupId,coachId);
+    public ResponseEntity<?> removeCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
+        try {
+            groupService.removeCoach(groupId, coachId);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Coach removed successfully");
     }
 
+    @Operation(summary = "update climbing data", description = "any amount and combination of ClimbingGroupDTO payload fields, " +
+            "pass only fields which you want to be updated")
+    @Parameter(name = "payload", description = "RequestBody")
     @PatchMapping
-    public void updateClimbingGroupData(@RequestParam ClimbingGroupDTO payload){
-        groupService.updateClimbingGroupData(payload);
+    public ResponseEntity<?> updateClimbingGroupData(@RequestBody ClimbingGroupDTO payload){
+        try {
+            groupService.updateClimbingGroupData(payload);
+        }catch (Exception e){
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body("Climbing group data updated successfully");
     }
 
 }

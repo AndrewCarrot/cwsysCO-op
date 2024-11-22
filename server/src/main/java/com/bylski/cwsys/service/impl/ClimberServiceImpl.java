@@ -38,7 +38,7 @@ public class ClimberServiceImpl implements ClimberService {
     public ClimberDTO getClimberByCardNumber(String cardNumber) {
         Optional<Climber> result = climberRepository.findByCardNumber(cardNumber);
         if(result.isEmpty())
-            throw new ResourceNotFoundException("Climber","card number", cardNumber);
+            throw new RuntimeException("Climber not found with cardNumber: " + cardNumber);
         return objectMapper.convertValue(result.get(), ClimberDTO.class);
     }
 
@@ -83,7 +83,7 @@ public class ClimberServiceImpl implements ClimberService {
             throw new ResourceAlreadyExistsException("Climber","email", payload.email());
 
         if(payload.cardNumber() != null && climberRepository.existsByCardNumber(payload.cardNumber()))
-            throw new ResourceAlreadyExistsException("Climber","cardNumber", payload.email());
+            throw new ResourceAlreadyExistsException("Climber","cardNumber", payload.cardNumber());
 
         Climber incomplete = objectMapper.convertValue(payload,Climber.class);
 
