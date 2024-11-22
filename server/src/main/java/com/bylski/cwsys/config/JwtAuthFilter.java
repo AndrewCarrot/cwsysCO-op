@@ -38,11 +38,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = null;
             String username = null;
 
-
-            if(authHeader == null)
-                throw new RuntimeException("Auth header is missing");
-
-
             if (authHeader.startsWith("Bearer ")) {
                 token = authHeader.substring(7);
                 username = JwtHelper.extractUsername(token);
