@@ -7,6 +7,7 @@ import com.bylski.cwsys.service.impl.UserDetailsServiceImpl;
 import com.bylski.cwsys.utilz.JwtHelper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,8 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(request.usernameOrEmail(), token));
     }
 
+    @Operation(summary = "validates jwt token")
+    @Parameter(name = "token", description = "Request body of \"token\":\"tokenValue\" ")
     @PostMapping("/validate")
     public ResponseEntity<String> validateToken(@RequestBody Map<String,String> token){
 
