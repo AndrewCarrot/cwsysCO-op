@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/climber")
 public class ClimberController {
     private final ClimberService climberService;
+    private long lastRequest = System.currentTimeMillis();
 
     public ClimberController(ClimberService climberService) {
         this.climberService = climberService;
@@ -72,8 +73,14 @@ public class ClimberController {
     public ResponseEntity<?> addNewClimber(
             @RequestBody NewClimberPayload payload
     ){
+        long now = System.currentTimeMillis();
+        if(now-lastRequest < 10000) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You have to wait at least" +
+                    " 10 seconds before next request");
+        }
         try {
             climberService.addNewClimber(payload);
+            lastRequest = now;
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
