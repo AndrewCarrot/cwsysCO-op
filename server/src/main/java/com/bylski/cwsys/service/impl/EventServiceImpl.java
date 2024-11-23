@@ -5,14 +5,12 @@ import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.EventDTO;
-import com.bylski.cwsys.model.dto.EventDTOMapper;
 import com.bylski.cwsys.model.payload.EventPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.repository.EventRepository;
 import com.bylski.cwsys.service.inf.EventService;
 import com.bylski.cwsys.utilz.Patcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,13 +25,15 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final CoachRepository coachRepository;
-    private final EventDTOMapper mapper;
     private final ObjectMapper objectMapper;
 
-    public EventServiceImpl(EventRepository eventRepository, CoachRepository coachRepository, EventDTOMapper mapper, ObjectMapper objectMapper) {
+    public EventServiceImpl(
+            EventRepository eventRepository,
+            CoachRepository coachRepository,
+            ObjectMapper objectMapper
+    ) {
         this.eventRepository = eventRepository;
         this.coachRepository = coachRepository;
-        this.mapper = mapper;
         this.objectMapper = objectMapper;
     }
 
@@ -41,13 +41,19 @@ public class EventServiceImpl implements EventService {
     public Page<EventDTO> getAllEvents(Pageable pageable) {
         if (pageable.isUnpaged())
                 pageable = PageRequest.of(0,10);
-        List<EventDTO> eventDTOList = eventRepository.findAll(pageable).stream().map(mapper).toList();
+        List<EventDTO> eventDTOList = eventRepository
+                        .findAll(pageable)
+                        .stream()
+                        .map(o->objectMapper.convertValue(o,EventDTO.class))
+                        .toList();
         return new PageImpl<>(eventDTOList,pageable,eventDTOList.size());
     }
 
     @Override
     public EventDTO getEventById(Long eventId) {
-        Optional<EventDTO> event = eventRepository.findById(eventId).map(mapper);
+        Optional<EventDTO> event = eventRepository
+                        .findById(eventId)
+                        .map(o->objectMapper.convertValue(o,EventDTO.class));
         if(event.isEmpty())
             throw new ResourceNotFoundException("Event","id",eventId);
         return event.get();
@@ -112,7 +118,7 @@ public class EventServiceImpl implements EventService {
         try{
             Patcher.objectPatcher(existing,incomplete);
             eventRepository.save(existing);
-        }catch(Exception e){
+        }catch(IllegalAccessException e){
             e.getCause();
         }
 
