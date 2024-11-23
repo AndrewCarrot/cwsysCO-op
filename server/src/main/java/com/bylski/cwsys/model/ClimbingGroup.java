@@ -1,11 +1,13 @@
 package com.bylski.cwsys.model;
 
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
-import com.bylski.cwsys.model.enums.DayOfWeek;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -22,6 +24,8 @@ public class ClimbingGroup extends DateAudit{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // this only affects data type in database, without - 0, with - MONDAY
+    @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
     private LocalTime classTime;
     private int durationInMinutes;
