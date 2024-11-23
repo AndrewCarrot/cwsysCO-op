@@ -6,7 +6,6 @@ import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.dto.CoachDTO;
-import com.bylski.cwsys.model.dto.CoachDTOMapper;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.CoachService;
@@ -22,16 +21,13 @@ import java.util.Set;
 public class CoachServiceImpl implements CoachService {
 
     private final CoachRepository coachRepository;
-    private final CoachDTOMapper coachDTOMapper;
     private final ObjectMapper objectMapper;
 
     public CoachServiceImpl(
             CoachRepository coachRepository,
-            CoachDTOMapper mapper,
             ObjectMapper objectMapper
     ) {
         this.coachRepository = coachRepository;
-        this.coachDTOMapper = mapper;
         this.objectMapper = objectMapper;
     }
 
@@ -59,7 +55,8 @@ public class CoachServiceImpl implements CoachService {
 
     @Override
     public List<CoachDTO> getCoaches() {
-        return coachRepository.findAll().stream().map(coachDTOMapper).toList();
+        return coachRepository.findAll().stream().map(o->objectMapper.convertValue(o,CoachDTO.class)).toList();
+
     }
 
     //TODO jeśli nie pozbywamy się starych eventów z bazy ten set może zrobić się dosyć spory,
@@ -72,20 +69,32 @@ public class CoachServiceImpl implements CoachService {
 
     @Override
     public CoachDTO getCoachById(Long coachId) {
-        Optional<CoachDTO> coach = coachRepository.findById(coachId).map(this.coachDTOMapper);
-        if (coach.isEmpty())
-            throw new ResourceNotFoundException("Coach","id",coachId);
-        return coach.get();
+//        Optional<CoachDTO> coach = coachRepository.findById(coachId).map(this.coachDTOMapper);
+//        if (coach.isEmpty())
+//            throw new ResourceNotFoundException("Coach","id",coachId);
+//        return coach.get();
+        Coach coach = coachRepository.findById(coachId)
+                .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
+        return objectMapper.convertValue(coach,CoachDTO.class);
+
     }
 
     @Override
     public List<CoachDTO> getCoachByFirstName(String firstName) {
-        return coachRepository.findAllByFirstName(firstName).stream().map(coachDTOMapper).toList();
+        return coachRepository
+                .findAllByFirstName(firstName)
+                .stream()
+                .map(o->objectMapper.convertValue(o,CoachDTO.class))
+                .toList();
     }
 
     @Override
     public List<CoachDTO> getCoachByLastName(String lastName) {
-        return coachRepository.findAllByLastName(lastName).stream().map(coachDTOMapper).toList();
+        return coachRepository
+                .findAllByLastName(lastName)
+                .stream()
+                .map(o->objectMapper.convertValue(o,CoachDTO.class))
+                .toList();
     }
 
     @Override
@@ -112,7 +121,7 @@ public class CoachServiceImpl implements CoachService {
         try{
             Patcher.objectPatcher(existing,incomplete);
             coachRepository.save(existing);
-        }catch (Exception e){
+        }catch(IllegalAccessException e){
             e.getCause();
         }
     }

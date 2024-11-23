@@ -30,7 +30,6 @@ public class Event extends DateAudit{
     private String name;
 
     @ManyToMany(mappedBy = "eventSet")
-    @JsonIgnore
     private Set<Coach> coachSet = new HashSet<>();
 
     public Event(int numberOfParticipants,
