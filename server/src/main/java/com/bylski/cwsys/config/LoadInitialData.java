@@ -2,7 +2,7 @@ package com.bylski.cwsys.config;
 
 import com.bylski.cwsys.model.*;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
-import com.bylski.cwsys.model.enums.DayOfWeek;
+//import com.bylski.cwsys.model.enums.DayOfWeek;
 import com.bylski.cwsys.model.enums.EventType;
 import com.bylski.cwsys.repository.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

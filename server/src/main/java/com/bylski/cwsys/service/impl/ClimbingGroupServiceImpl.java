@@ -5,6 +5,7 @@ import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Climber;
 import com.bylski.cwsys.model.ClimbingGroup;
 import com.bylski.cwsys.model.Coach;
+import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
@@ -16,6 +17,9 @@ import com.bylski.cwsys.utilz.Patcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,6 +118,33 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
                 .orElseThrow(()->new ResourceNotFoundException("Group","id",groupId));
         Coach coach = coachRepository.findById(coachId)
                 .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
+
+
+        // check if coach doesn't have another group at that time
+        // group has priority over event, maybe we should give some warning
+        //-------------------------------------
+
+        LocalTime groupTime = group.getClassTime();
+        DayOfWeek groupDay = group.getDayOfWeek();
+        int groupDuration = group.getDurationInMinutes();
+
+        //groups
+        Optional<ClimbingGroup> optionalClimbingGroup = coach.getClimbingGroupSet()
+                .stream()
+                .filter(c -> c.getDayOfWeek().equals(groupDay))
+                .filter( c -> {
+                    LocalTime time = c.getClassTime();
+                    int duration = c.getDurationInMinutes();
+                    return groupTime.isBefore(time) && groupTime.plusMinutes(groupDuration).isAfter(time) ||
+                            time.isBefore(groupTime) && time.plusMinutes(duration).isAfter(groupTime);
+                })
+                .findAny();
+
+        if (optionalClimbingGroup.isPresent())
+            throw new ResourceAlreadyExistsException("Coach already has group assigned at given time");
+
+        //-----------------------------------------------
+
 
         group.getCoachSet().add(coach);
         coach.getClimbingGroupSet().add(group);
