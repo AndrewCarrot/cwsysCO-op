@@ -12,18 +12,20 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImpl userDetailsService;
     private final ObjectMapper objectMapper;
+
+    private final Logger logger = Logger.getLogger(JwtAuthFilter.class.getName());
 
     public JwtAuthFilter(UserDetailsServiceImpl userDetailsService, ObjectMapper objectMapper) {
         this.userDetailsService = userDetailsService;
@@ -61,6 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (AccessDeniedException e) {
+            logger.log(Level.WARNING, "Access denied");
             ApiErrorResponse errorResponse = new ApiErrorResponse(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.getWriter().write(toJson(errorResponse));
@@ -71,6 +74,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             return objectMapper.writeValueAsString(response);
         } catch (Exception e) {
+            logger.log(Level.WARNING, "ApiErrorResponse parsing to Json failed ");
             return ""; // Return an empty string if serialization fails
         }
     }

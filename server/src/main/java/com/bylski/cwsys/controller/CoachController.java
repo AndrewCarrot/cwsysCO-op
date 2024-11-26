@@ -1,33 +1,29 @@
 package com.bylski.cwsys.controller;
 
-import com.bylski.cwsys.model.Coach;
-import com.bylski.cwsys.model.Event;
-import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.dto.CoachDTO;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.service.inf.CoachService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.coyote.Response;
-import org.hibernate.annotations.NotFound;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Tag(name = "Coach Controller", description = "Methods for Coach API")
 @RestController
 @RequestMapping("/coach")
 public class CoachController {
     private final CoachService coachService;
+
+    private static final Logger logger = Logger.getLogger(CoachController.class.getName());
 
     public CoachController(CoachService coachService) {
         this.coachService = coachService;
@@ -46,10 +42,13 @@ public class CoachController {
     })
     @GetMapping("/{coachId}")
     public ResponseEntity<?> getCoachById(
-            @Parameter(name = "coachId", description = "PathVariable")
+            @Parameter(name = "coachId", description = "Przy indeksach 1-9 czasami nie wywołuje się kontroler," +
+                    " chuj wie dlaczego, jeśli poprzedzisz numer zerem - 01,02 wtedy działa zawsze (?) " +
+                    "więc pewnie tak byłoby bezpieczniej ")
             @PathVariable Long coachId
     ){
         try{
+            logger.log(Level.INFO, "CoachID: " + coachId);
             return ResponseEntity.ok().body(coachService.getCoachById(coachId));
         }catch(Exception e){
             return ResponseEntity.status(400).body(e.getMessage());
@@ -74,19 +73,29 @@ public class CoachController {
         return coachService.getCoachByLastName(lastName);
     }
 
-    @Operation(summary = "Get events for given coach")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400")
-    })
-    @Parameter(name = "coachId",description = "PathVariable")
-    @GetMapping("/event/{coachId}")
-    public ResponseEntity<?> getEventsForGivenCoach(@PathVariable Long coachId){
+    @Operation(summary = "Returns Page of events for given coach that will take place in the future")
+    @GetMapping("/active-events/{coachId}")
+    public ResponseEntity<?> getActiveEvents(@PathVariable Long coachId, Pageable pageable){
         try{
-            return ResponseEntity.ok().body(coachService.getEventsForGivenCoach(coachId));
+            return ResponseEntity.ok().body(coachService.getActiveEvents(coachId, pageable));
         }catch (Exception e){
-            return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.status(404).body(e.getMessage());
         }
+    }
+
+    @Operation(summary = "Returns Page of events for given coach that took place in the past")
+    @Parameter(name = "date", description = "RequestParam, how far back you want to check : \"?date=2022-10-22\" ")
+    @GetMapping("/past-events/{coachId}")
+    public ResponseEntity<?> getPastEvents(
+            @PathVariable Long coachId,
+            @RequestParam LocalDate date,
+            Pageable pageable
+            ){
+            try{
+                return ResponseEntity.ok().body(coachService.getPastEvents(coachId,date,pageable));
+            }catch (Exception e){
+                return ResponseEntity.status(404).body(e.getMessage());
+            }
     }
 
     @Operation(summary = "Add new Coach")
