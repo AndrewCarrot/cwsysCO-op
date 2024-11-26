@@ -68,9 +68,8 @@ public class CoachServiceImpl implements CoachService {
 
     }
 
-    //TODO
     @Override
-    public Page<EventDTO> getActiveEvents(Long coachId, Pageable pageable) {
+    public List<EventDTO> getActiveEvents(Long coachId) {
         List<EventDTO> events = eventService.getActiveEvents();
         List<EventDTO> result = new ArrayList<>();
 
@@ -83,13 +82,9 @@ public class CoachServiceImpl implements CoachService {
             }
         }
 
-        //------------------------------------------------
-        if (pageable.isUnpaged())
-            pageable = PageRequest.of(0,10);
-        return new PageImpl<>(result, pageable, events.size());
+        return result;
     }
 
-    //TODO
     @Override
     public Page<EventDTO> getPastEvents(Long coachId, LocalDate from, Pageable pageable) {
         List<EventDTO> events = eventService.getPastEvents(from);

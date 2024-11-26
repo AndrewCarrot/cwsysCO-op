@@ -1,6 +1,8 @@
 package com.bylski.cwsys.controller;
 
+import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
+import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
 import com.bylski.cwsys.service.inf.ClimbingGroupService;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.hibernate.annotations.NotFound;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -143,19 +146,29 @@ public class ClimbingGroupController {
         return ResponseEntity.ok().body("Climber removed successfully");
     }
 
-    @Operation(summary = "Add coach to group")
+    @Operation(
+            summary = "Add coach to group"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "No conflicts"),
+            @ApiResponse(responseCode = "400"),
+            @ApiResponse(responseCode = "409", description = "Coach added successfully but there are conflicting Events, " +
+                    "returns List of conflicting events")
+    })
     @Parameters({
             @Parameter(name = "group-id", description = "RequestParam"),
             @Parameter(name = "coach-id", description = "RequestParam")
     })
     @PatchMapping("/add-coach")
     public ResponseEntity<?> addCoach(@RequestParam(name = "group-id") Long groupId, @RequestParam(name = "coach-id") Long coachId){
+        List<EventDTO> returnList;
         try {
-            groupService.addCoach(groupId,coachId);
+           returnList = groupService.addCoach(groupId,coachId);
         }catch (Exception e){
             return ResponseEntity.status(400).body(e.getMessage());
         }
-        return ResponseEntity.ok().body("Coach added successfully");
+        return !returnList.isEmpty() ? ResponseEntity.status(HttpStatus.CONFLICT).body(returnList)
+                :  ResponseEntity.ok().body("No conflicting events");
     }
 
     @Operation(summary = "remove coach from group")

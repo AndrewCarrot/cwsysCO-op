@@ -16,7 +16,7 @@ public interface CoachService {
     void addCoach(CoachPayload coachPayload) throws Exception;
     void deleteCoach(Long coachId);
     List<CoachDTO> getCoaches();
-    Page<EventDTO> getActiveEvents(Long coachId, Pageable pageable);
+    List<EventDTO> getActiveEvents(Long coachId);
     Page<EventDTO> getPastEvents(Long coachId, LocalDate from, Pageable pageable);
     CoachDTO getCoachById(Long coachId);
     List<CoachDTO> getCoachByFirstName(String firstName);
