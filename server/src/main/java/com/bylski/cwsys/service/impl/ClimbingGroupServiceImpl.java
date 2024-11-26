@@ -7,12 +7,14 @@ import com.bylski.cwsys.model.ClimbingGroup;
 import com.bylski.cwsys.model.Coach;
 import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
+import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
 import com.bylski.cwsys.repository.ClimberRepository;
 import com.bylski.cwsys.repository.ClimbingGroupRepository;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.ClimbingGroupService;
+import com.bylski.cwsys.service.inf.CoachService;
 import com.bylski.cwsys.utilz.Patcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
@@ -29,17 +31,19 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
     private final ClimbingGroupRepository climbingGroupRepository;
     private final ClimberRepository climberRepository;
     private final CoachRepository coachRepository;
+    private final CoachService coachService;
     private final ObjectMapper objectMapper;
 
     public ClimbingGroupServiceImpl(
             ClimbingGroupRepository climbingGroupRepository,
             ClimberRepository climberRepository,
-            CoachRepository coachRepository,
+            CoachRepository coachRepository, CoachService coachService,
             ObjectMapper objectMapper
     ) {
         this.climbingGroupRepository = climbingGroupRepository;
         this.climberRepository = climberRepository;
         this.coachRepository = coachRepository;
+        this.coachService = coachService;
         this.objectMapper = objectMapper;
     }
 
@@ -113,7 +117,7 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
     }
 
     @Override
-    public void addCoach(Long groupId, Long coachId){
+    public List<EventDTO> addCoach(Long groupId, Long coachId){
         ClimbingGroup group = climbingGroupRepository.findById(groupId)
                 .orElseThrow(()->new ResourceNotFoundException("Group","id",groupId));
         Coach coach = coachRepository.findById(coachId)
@@ -121,7 +125,6 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
 
 
         // check if coach doesn't have another group at that time
-        // group has priority over event, maybe we should give some warning
         //-------------------------------------
 
         LocalTime groupTime = group.getClassTime();
@@ -136,19 +139,34 @@ public class ClimbingGroupServiceImpl implements ClimbingGroupService {
                     LocalTime time = c.getClassTime();
                     int duration = c.getDurationInMinutes();
                     return groupTime.isBefore(time) && groupTime.plusMinutes(groupDuration).isAfter(time) ||
-                            time.isBefore(groupTime) && time.plusMinutes(duration).isAfter(groupTime);
+                            time.isBefore(groupTime) && time.plusMinutes(duration).isAfter(groupTime) ||
+                            groupTime.equals(time);
                 })
                 .findAny();
 
         if (optionalClimbingGroup.isPresent())
             throw new ResourceAlreadyExistsException("Coach already has group assigned at given time");
 
-        //-----------------------------------------------
 
+        // if there are colliding events we return List of colliding events
+        List<EventDTO> collidingEvents = coachService.getActiveEvents(coachId)
+                .stream()
+                .filter(e -> e.dateTime().getDayOfWeek().equals(groupDay))
+                .filter( e -> {
+                    LocalTime time = e.dateTime().toLocalTime();
+                    int duration = e.durationInMinutes();
+                    return groupTime.isBefore(time) && groupTime.plusMinutes(groupDuration).isAfter(time) ||
+                            time.isBefore(groupTime) && time.plusMinutes(duration).isAfter(groupTime) ||
+                            groupTime.equals(time);
+                })
+                        .toList();
+        //-----------------------------------------------
 
         group.getCoachSet().add(coach);
         coach.getClimbingGroupSet().add(group);
         climbingGroupRepository.save(group);
+
+        return collidingEvents;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.bylski.cwsys.service.inf;
 
+import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
+import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.enums.ClimbingGroupType;
 import com.bylski.cwsys.model.payload.ClimbingGroupPayload;
 
@@ -14,7 +16,7 @@ public interface ClimbingGroupService {
     void deleteGroup(Long groupId);
     void addClimber(Long groupId, Long climberId);
     void removeClimber(Long groupId, Long climberId);
-    void addCoach(Long groupId, Long coachId);
+    List<EventDTO> addCoach(Long groupId, Long coachId);
     void removeCoach(Long groupId, Long coachId);
     void updateClimbingGroupData(ClimbingGroupDTO payload);
 }

@@ -1,6 +1,7 @@
 package com.bylski.cwsys.controller;
 
 import com.bylski.cwsys.model.dto.CoachDTO;
+import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.service.inf.CoachService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,6 +9,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -76,8 +79,12 @@ public class CoachController {
     @Operation(summary = "Returns Page of events for given coach that will take place in the future")
     @GetMapping("/active-events/{coachId}")
     public ResponseEntity<?> getActiveEvents(@PathVariable Long coachId, Pageable pageable){
+        if (pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
         try{
-            return ResponseEntity.ok().body(coachService.getActiveEvents(coachId, pageable));
+            List<EventDTO> eventDTOList = coachService.getActiveEvents(coachId);
+            return ResponseEntity.ok().body(
+                    new PageImpl<>(eventDTOList, pageable,eventDTOList.size()));
         }catch (Exception e){
             return ResponseEntity.status(404).body(e.getMessage());
         }
