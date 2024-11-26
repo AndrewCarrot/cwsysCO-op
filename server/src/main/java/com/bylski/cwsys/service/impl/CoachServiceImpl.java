@@ -3,46 +3,55 @@ package com.bylski.cwsys.service.impl;
 import com.bylski.cwsys.exception.ResourceAlreadyExistsException;
 import com.bylski.cwsys.exception.ResourceNotFoundException;
 import com.bylski.cwsys.model.Coach;
-import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.ClimbingGroupDTO;
 import com.bylski.cwsys.model.dto.CoachDTO;
+import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.payload.CoachPayload;
 import com.bylski.cwsys.repository.CoachRepository;
 import com.bylski.cwsys.service.inf.CoachService;
+import com.bylski.cwsys.service.inf.EventService;
 import com.bylski.cwsys.utilz.Patcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class CoachServiceImpl implements CoachService {
 
     private final CoachRepository coachRepository;
+    private final EventService eventService;
     private final ObjectMapper objectMapper;
 
     public CoachServiceImpl(
-            CoachRepository coachRepository,
+            CoachRepository coachRepository, EventService eventService,
             ObjectMapper objectMapper
     ) {
         this.coachRepository = coachRepository;
+        this.eventService = eventService;
         this.objectMapper = objectMapper;
     }
 
 
     @Override
     public void addCoach(CoachPayload coachPayload){
-        Optional<Coach> result = coachRepository.findByPseudonym(coachPayload.personalNumber());
+        Optional<Coach> result = coachRepository.findByPseudonym(coachPayload.pseudonym());
 
         if(result.isPresent())
-            throw new ResourceAlreadyExistsException("Coach","personal number",coachPayload.personalNumber());
+            throw new ResourceAlreadyExistsException("Coach","pseudonym",coachPayload.pseudonym());
 
         Coach coach = new Coach(
                 coachPayload.firstName(),
                 coachPayload.lastName(),
-                coachPayload.personalNumber()
+                coachPayload.pseudonym()
         );
 
         coachRepository.save(coach);
@@ -59,20 +68,50 @@ public class CoachServiceImpl implements CoachService {
 
     }
 
-    //TODO jeśli nie pozbywamy się starych eventów z bazy ten set może zrobić się dosyć spory,
+    //TODO
     @Override
-    public Set<Event> getEventsForGivenCoach(Long coachId) {
-        Coach result = coachRepository.findById(coachId)
-                .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
-        return result.getEventSet();
+    public Page<EventDTO> getActiveEvents(Long coachId, Pageable pageable) {
+        List<EventDTO> events = eventService.getActiveEvents();
+        List<EventDTO> result = new ArrayList<>();
+
+        for(EventDTO e: events){
+            for(Coach c: e.coachSet()){
+                if(c.getId().equals(coachId)){
+                    result.add(e);
+                    break;
+                }
+            }
+        }
+
+        //------------------------------------------------
+        if (pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
+        return new PageImpl<>(result, pageable, events.size());
+    }
+
+    //TODO
+    @Override
+    public Page<EventDTO> getPastEvents(Long coachId, LocalDate from, Pageable pageable) {
+        List<EventDTO> events = eventService.getPastEvents(from);
+        List<EventDTO> result = new ArrayList<>();
+
+        for(EventDTO e: events){
+            for(Coach c: e.coachSet()){
+                if(c.getId().equals(coachId)){
+                    result.add(e);
+                    break;
+                }
+            }
+        }
+
+        //---------------------------------------------------------
+        if (pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
+        return new PageImpl<>(result, pageable, events.size());
     }
 
     @Override
     public CoachDTO getCoachById(Long coachId) {
-//        Optional<CoachDTO> coach = coachRepository.findById(coachId).map(this.coachDTOMapper);
-//        if (coach.isEmpty())
-//            throw new ResourceNotFoundException("Coach","id",coachId);
-//        return coach.get();
         Coach coach = coachRepository.findById(coachId)
                 .orElseThrow(()->new ResourceNotFoundException("Coach","id",coachId));
         return objectMapper.convertValue(coach,CoachDTO.class);

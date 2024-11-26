@@ -22,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -169,5 +170,19 @@ public class EventServiceImpl implements EventService {
             e.getCause();
         }
 
+    }
+
+    @Override
+    public List<EventDTO> getActiveEvents(){
+        return eventRepository.getActiveEvents().stream()
+                .map(o->objectMapper.convertValue(o,EventDTO.class))
+                .toList();
+    }
+
+    @Override
+    public List<EventDTO> getPastEvents(LocalDate from) {
+        return eventRepository.getPastEvents(from).stream()
+                        .map(o->objectMapper.convertValue(o,EventDTO.class))
+                        .toList();
     }
 }

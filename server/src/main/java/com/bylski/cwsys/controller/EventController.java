@@ -1,32 +1,34 @@
 package com.bylski.cwsys.controller;
 
-import com.bylski.cwsys.model.Event;
 import com.bylski.cwsys.model.dto.EventDTO;
 import com.bylski.cwsys.model.payload.EventPayload;
 import com.bylski.cwsys.service.inf.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.hibernate.annotations.NotFound;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Tag(name = "Event Controller", description = "Methods for Event API")
 @RestController
 @RequestMapping("/event")
 public class EventController {
     private final EventService eventService;
+
+    private static Logger logger = Logger.getLogger(EventController.class.getName());
 
     public EventController(EventService eventService) {
         this.eventService = eventService;
@@ -58,6 +60,7 @@ public class EventController {
             @PathVariable Long eventId
     ){
         try {
+            logger.log(Level.INFO, "EventID: " + eventId);
             return ResponseEntity.ok().body(eventService.getEventById(eventId));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -132,7 +135,25 @@ public class EventController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
 
+    @Operation(summary = "Returns Page of events that will take place in the future")
+    @GetMapping("/active")
+    public Page<EventDTO> getActiveEvents(Pageable pageable){
+        if (pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
+        List<EventDTO> eventDTOList = eventService.getActiveEvents();
+        return new PageImpl<>(eventDTOList, pageable, eventDTOList.size());
+    }
+
+    @Operation(summary = "Returns Page of events that took place in the past")
+    @Parameter(name = "date", description = "RequestParam, specifies how far in the past you want to go")
+    @GetMapping("/past")
+    public Page<EventDTO> getPastEvents(@RequestParam LocalDate date, Pageable pageable){
+        if (pageable.isUnpaged())
+            pageable = PageRequest.of(0,10);
+        List<EventDTO> eventDTOList = eventService.getPastEvents(date);
+        return new PageImpl<>(eventDTOList, pageable, eventDTOList.size());
     }
 
 

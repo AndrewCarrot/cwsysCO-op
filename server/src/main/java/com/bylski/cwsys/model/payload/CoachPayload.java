@@ -8,6 +8,6 @@ public record CoachPayload(
         @NotNull
         String lastName,
         @NotNull
-        String personalNumber
+        String pseudonym
 ) {
 }

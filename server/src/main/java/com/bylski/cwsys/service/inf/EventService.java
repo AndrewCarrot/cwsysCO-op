@@ -6,6 +6,7 @@ import com.bylski.cwsys.model.payload.EventPayload;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface EventService{
@@ -16,4 +17,6 @@ public interface EventService{
     void addCoach(Long eventId, Long coachId);
     void removeCoach(Long eventId, Long coachId);
     void updateEventData(EventDTO payload);
+    List<EventDTO> getActiveEvents();
+    List<EventDTO> getPastEvents(LocalDate from);
 }

@@ -62,7 +62,7 @@ public class LoadInitialData {
                     15,
                     2,
                     90,
-                    LocalDateTime.now(),
+                    LocalDateTime.now().plusDays(1),
                     EventType.GROUP,
                     "Aspi"
             );
@@ -71,9 +71,39 @@ public class LoadInitialData {
               20,
               3,
                     90,
-              LocalDateTime.of(2024,11,16,10,0),
+              LocalDateTime.now().plusMinutes(15),
               EventType.GROUP,
                     "fundacja xyz"
+            );
+
+            Event pastEvent = new Event(
+                    20,
+                    2,
+                    90,
+                    LocalDateTime.now().minusMinutes(100),
+                    EventType.GROUP,
+                    "grupa testowa nr4"
+
+            );
+
+            Event pastEvent2 = new Event(
+                    20,
+                    2,
+                    90,
+                    LocalDateTime.now().minusDays(1),
+                    EventType.GROUP,
+                    "grupa testowa nr5"
+
+            );
+
+            Event pastEvent3 = new Event(
+                    20,
+                    2,
+                    90,
+                    LocalDateTime.now().minusMonths(1),
+                    EventType.GROUP,
+                    "grupa testowa nr6"
+
             );
 
             ClimbingGroup group1 = new ClimbingGroup(
@@ -87,11 +117,9 @@ public class LoadInitialData {
             climbingGroupRepository.save(group1);
 
 
-            coach1.getEventSet().add(event1);
+            Set<Event> eventSet = Set.of(event1, event2, pastEvent, pastEvent2, pastEvent3);
+            coach1.setEventSet(eventSet);
 
-
-
-            Set<Event> eventSet = Set.of(event1, event2);
             Set<Coach> coachSet = Set.of(coach1, coach2, coach3);
 
             coachSet.forEach(coachRepository::save);

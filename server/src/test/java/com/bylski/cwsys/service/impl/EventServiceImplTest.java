@@ -40,6 +40,8 @@ class EventServiceImplTest {
     private Event event;
     private Event event2;
     private Event event3;
+
+
     private ClimbingGroup climbingGroup;
 
     @BeforeEach
@@ -80,10 +82,6 @@ class EventServiceImplTest {
                 ClimbingGroupType.CHILDREN
         );
 
-
-
-
-
     }
 
     @AfterEach
@@ -121,5 +119,13 @@ class EventServiceImplTest {
         given(eventRepository.findById(anyLong())).willReturn(Optional.of(event));
 
         assertThrows(ResourceAlreadyExistsException.class,() -> eventService.addCoach(1L,1L) );
+    }
+
+    @Test
+    void getActiveEvents() {
+    }
+
+    @Test
+    void getPastEvents() {
     }
 }
