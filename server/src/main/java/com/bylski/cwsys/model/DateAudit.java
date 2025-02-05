@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -19,6 +20,9 @@ public abstract class DateAudit implements Serializable {
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime lastModifiedDate;
+
+    //test pr2
+
     public DateAudit(){}
     public DateAudit(LocalDateTime createdDate, LocalDateTime lastModifiedDate){
         this.createdDate = createdDate;
